@@ -1,2 +1,2 @@
-# cv-creator
+# CV creator
 Simple CV creator
