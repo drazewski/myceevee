@@ -1,13 +1,12 @@
 .sidebar {
-  width: 280px;
-  min-width: 260px;
-  background: #1e2a3a;
+  width: 27%;
+  min-width: 200px;
+  background: var(--color-primary);
   color: #e8edf3;
-  padding: 2.5rem 1.75rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0;
-  min-height: 100vh;
 }
 
 /* Photo */
@@ -22,14 +21,14 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #4a90d9;
+  border: 3px solid var(--color-accent);
 }
 
 .sidebar__photo--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #4a90d9;
+  background: var(--color-accent);
   color: #fff;
   font-size: 2.5rem;
   font-weight: 700;
@@ -81,7 +80,7 @@
 }
 
 .sidebar__contact-icon {
-  color: #4a90d9;
+  color: var(--color-accent);
   margin-top: 0.15em;
   flex-shrink: 0;
 }
@@ -93,7 +92,7 @@
 }
 
 .sidebar__contact-link:hover {
-  color: #4a90d9;
+  color: var(--color-accent);
   text-decoration: underline;
 }
 
@@ -118,9 +117,9 @@
 }
 
 .sidebar__tech-badge {
-  background: rgba(74, 144, 217, 0.2);
+  background: color-mix(in srgb, var(--color-accent) 20%, transparent);
   color: #a8c8e8;
-  border: 1px solid rgba(74, 144, 217, 0.35);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
   border-radius: 4px;
   padding: 0.2rem 0.55rem;
   font-size: 0.75rem;

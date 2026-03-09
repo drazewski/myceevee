@@ -5,7 +5,7 @@
 }
 
 .experience__entry {
-  border-left: 3px solid #4a90d9;
+  border-left: 3px solid var(--color-accent);
   padding-left: 1rem;
 }
 
@@ -20,7 +20,7 @@
 .experience__role {
   font-size: 1rem;
   font-weight: 700;
-  color: #1e2a3a;
+  color: var(--color-primary);
   margin: 0 0 0.15rem;
 }
 

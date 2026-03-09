@@ -4,11 +4,15 @@
   box-sizing: border-box;
 }
 
+:root {
+  --color-primary: #1e2a3a;
+  --color-accent:  #4a90d9;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
   font-size: 16px;
-  background: #f5f7fa;
   color: #222;
 }

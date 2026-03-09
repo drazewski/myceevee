@@ -1,4 +1,36 @@
-.cv-layout {
-  display: flex;
+/* ── Desk (grey page background) ───────────────────────────── */
+.cv-page {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #c8cdd4;
+}
+
+/* ── A4 paper ───────────────────────────────────────────────── */
+/* 794 × 1123 px = 210 × 297 mm at 96 dpi */
+.cv-layout {
+  width: 794px;
+  min-height: 1123px;
+  display: flex;
+  background: #fff;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.22);
+  flex-shrink: 0;
+}
+
+/* ── Print ──────────────────────────────────────────────────── */
+@media print {
+  .cv-page {
+    padding: 0;
+    background: none;
+    display: block;
+  }
+
+  .cv-layout {
+    width: 100%;
+    min-height: 100vh;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }

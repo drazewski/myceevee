@@ -1,21 +1,19 @@
 .main-content {
   flex: 1;
-  padding: 2.5rem 3rem;
-  background: #f5f7fa;
-  min-height: 100vh;
+  padding: 2.5rem 2.25rem;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
-/* Shared section styles used by child components */
 .cv-section__title {
   font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #1e2a3a;
+  color: var(--color-primary);
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #4a90d9;
+  border-bottom: 2px solid var(--color-accent);
   margin: 0 0 1.25rem;
 }
