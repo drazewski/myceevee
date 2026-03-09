@@ -5,22 +5,33 @@ import {
   faEnvelope,
   faGlobe,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  faGithub,
-  faLinkedin,
-} from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { CvData } from '../data/cv';
 import './Sidebar.css';
 
-const contactItems = (contact) => [
-  { icon: faBriefcase, label: contact.position, href: null },
-  { icon: faLocationDot, label: contact.location, href: null },
-  { icon: faEnvelope, label: contact.email, href: `mailto:${contact.email}` },
-  { icon: faGlobe, label: 'Website', href: contact.webpage },
-  { icon: faGithub, label: 'GitHub', href: contact.github },
-  { icon: faLinkedin, label: 'LinkedIn', href: contact.linkedin },
-];
+interface ContactItem {
+  icon: IconDefinition;
+  label: string;
+  href: string | null;
+}
 
-export default function Sidebar({ data }) {
+function buildContactItems(contact: CvData['contact']): ContactItem[] {
+  return [
+    { icon: faBriefcase, label: contact.position, href: null },
+    { icon: faLocationDot, label: contact.location, href: null },
+    { icon: faEnvelope, label: contact.email, href: `mailto:${contact.email}` },
+    { icon: faGlobe, label: 'Website', href: contact.webpage },
+    { icon: faGithub, label: 'GitHub', href: contact.github },
+    { icon: faLinkedin, label: 'LinkedIn', href: contact.linkedin },
+  ];
+}
+
+interface SidebarProps {
+  data: CvData;
+}
+
+export default function Sidebar({ data }: SidebarProps) {
   const { photo, name, title, contact, technologies } = data;
 
   return (
@@ -41,7 +52,7 @@ export default function Sidebar({ data }) {
       <div className="sidebar__divider" />
 
       <ul className="sidebar__contact">
-        {contactItems(contact).map(({ icon, label, href }) => (
+        {buildContactItems(contact).map(({ icon, label, href }) => (
           <li key={label} className="sidebar__contact-item">
             <FontAwesomeIcon icon={icon} className="sidebar__contact-icon" fixedWidth />
             {href ? (

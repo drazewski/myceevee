@@ -1,5 +1,46 @@
-export const cvData = {
-  photo: null, // replace with import or URL, e.g. '/photo.jpg'
+export interface Contact {
+  position: string;
+  location: string;
+  email: string;
+  webpage: string;
+  github: string;
+  linkedin: string;
+}
+
+export interface ExperienceEntry {
+  company: string;
+  role: string;
+  period: string;
+  location: string;
+  bullets: string[];
+}
+
+export interface EducationEntry {
+  institution: string;
+  degree: string;
+  period: string;
+}
+
+export interface CourseEntry {
+  name: string;
+  provider: string;
+  year: string;
+}
+
+export interface CvData {
+  photo: string | null;
+  name: string;
+  title: string;
+  contact: Contact;
+  technologies: string[];
+  aboutMe: string[];
+  experience: ExperienceEntry[];
+  education: EducationEntry[];
+  courses: CourseEntry[];
+}
+
+export const cvData: CvData = {
+  photo: null,
   name: 'John Doe',
   title: 'Senior Software Engineer',
 

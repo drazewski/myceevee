@@ -1,6 +1,11 @@
+import { EducationEntry } from '../data/cv';
 import './Education.css';
 
-export default function Education({ items }) {
+interface EducationProps {
+  items: EducationEntry[];
+}
+
+export default function Education({ items }: EducationProps) {
   return (
     <section className="education">
       <h2 className="cv-section__title">Education</h2>

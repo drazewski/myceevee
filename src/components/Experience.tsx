@@ -1,6 +1,11 @@
+import { ExperienceEntry } from '../data/cv';
 import './Experience.css';
 
-export default function Experience({ items }) {
+interface ExperienceProps {
+  items: ExperienceEntry[];
+}
+
+export default function Experience({ items }: ExperienceProps) {
   return (
     <section className="experience">
       <h2 className="cv-section__title">Experience</h2>
