@@ -1,0 +1,13 @@
+.about-me__list {
+  margin: 0;
+  padding: 0 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.about-me__item {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #3a4a5a;
+}

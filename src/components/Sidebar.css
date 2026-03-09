@@ -1,0 +1,128 @@
+.sidebar {
+  width: 280px;
+  min-width: 260px;
+  background: #1e2a3a;
+  color: #e8edf3;
+  padding: 2.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 100vh;
+}
+
+/* Photo */
+.sidebar__photo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.sidebar__photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4a90d9;
+}
+
+.sidebar__photo--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4a90d9;
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Name & Title */
+.sidebar__name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.sidebar__title {
+  font-size: 0.85rem;
+  text-align: center;
+  color: #9ab3cc;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+/* Divider */
+.sidebar__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 1.5rem 0;
+}
+
+/* Contact list */
+.sidebar__contact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar__contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.sidebar__contact-icon {
+  color: #4a90d9;
+  margin-top: 0.15em;
+  flex-shrink: 0;
+}
+
+.sidebar__contact-link {
+  color: #e8edf3;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.sidebar__contact-link:hover {
+  color: #4a90d9;
+  text-decoration: underline;
+}
+
+/* Section title */
+.sidebar__section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ab3cc;
+  margin: 0 0 0.85rem;
+}
+
+/* Tech badges */
+.sidebar__tech-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.sidebar__tech-badge {
+  background: rgba(74, 144, 217, 0.2);
+  color: #a8c8e8;
+  border: 1px solid rgba(74, 144, 217, 0.35);
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
