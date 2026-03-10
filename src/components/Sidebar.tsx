@@ -4,76 +4,97 @@ import {
   faLocationDot,
   faEnvelope,
   faGlobe,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { CvData } from '../data/cv';
+import { useCvStore } from '../store/cvStore';
+import { useSettingsStore } from '../store/settingsStore';
+import EditableText from './EditableText';
+import PhotoUpload from './PhotoUpload';
 import './Sidebar.css';
 
-interface ContactItem {
-  icon: IconDefinition;
-  label: string;
-  href: string | null;
-}
-
-function buildContactItems(contact: CvData['contact']): ContactItem[] {
-  return [
-    { icon: faBriefcase, label: contact.position, href: null },
-    { icon: faLocationDot, label: contact.location, href: null },
-    { icon: faEnvelope, label: contact.email, href: `mailto:${contact.email}` },
-    { icon: faGlobe, label: 'Website', href: contact.webpage },
-    { icon: faGithub, label: 'GitHub', href: contact.github },
-    { icon: faLinkedin, label: 'LinkedIn', href: contact.linkedin },
-  ];
-}
-
-interface SidebarProps {
-  data: CvData;
-}
-
-export default function Sidebar({ data }: SidebarProps) {
-  const { photo, name, title, contact, technologies } = data;
+export default function Sidebar() {
+  const {
+    data: { photo, name, title, contact, technologies },
+    setName, setTitle, setContact, setPhoto,
+    setTechnology, addTechnology, removeTechnology,
+  } = useCvStore();
+  const { visibility } = useSettingsStore();
 
   return (
     <aside className="sidebar">
-      <div className="sidebar__photo-wrapper">
-        {photo ? (
-          <img src={photo} alt={name} className="sidebar__photo" />
-        ) : (
-          <div className="sidebar__photo sidebar__photo--placeholder">
-            {name.charAt(0)}
-          </div>
-        )}
-      </div>
+      {visibility.photo && (
+        <div className="sidebar__photo-wrapper">
+          <PhotoUpload photo={photo} name={name} onUpload={setPhoto} onRemove={() => setPhoto(null)} />
+        </div>
+      )}
 
-      <h1 className="sidebar__name">{name}</h1>
-      <p className="sidebar__title">{title}</p>
+      <h1 className="sidebar__name">
+        <EditableText value={name} onChange={setName} dark />
+      </h1>
+      <p className="sidebar__title">
+        <EditableText value={title} onChange={setTitle} dark />
+      </p>
 
       <div className="sidebar__divider" />
 
       <ul className="sidebar__contact">
-        {buildContactItems(contact).map(({ icon, label, href }) => (
-          <li key={label} className="sidebar__contact-item">
-            <FontAwesomeIcon icon={icon} className="sidebar__contact-icon" fixedWidth />
-            {href ? (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="sidebar__contact-link">
-                {label}
-              </a>
-            ) : (
-              <span>{label}</span>
-            )}
+        {visibility.position && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faBriefcase} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.position} onChange={(v) => setContact('position', v)} dark />
           </li>
-        ))}
+        )}
+        {visibility.location && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faLocationDot} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.location} onChange={(v) => setContact('location', v)} dark />
+          </li>
+        )}
+        {visibility.email && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faEnvelope} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.email} onChange={(v) => setContact('email', v)} dark href={`mailto:${contact.email}`} fitLine />
+          </li>
+        )}
+        {visibility.webpage && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faGlobe} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.webpage} onChange={(v) => setContact('webpage', v)} dark href={contact.webpage} hrefTarget="_blank" stripProtocol fitLine />
+          </li>
+        )}
+        {visibility.github && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faGithub} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.github} onChange={(v) => setContact('github', v)} dark href={contact.github} hrefTarget="_blank" stripProtocol fitLine />
+          </li>
+        )}
+        {visibility.linkedin && (
+          <li className="sidebar__contact-item">
+            <FontAwesomeIcon icon={faLinkedin} className="sidebar__contact-icon" fixedWidth />
+            <EditableText value={contact.linkedin} onChange={(v) => setContact('linkedin', v)} dark href={contact.linkedin} hrefTarget="_blank" stripProtocol fitLine />
+          </li>
+        )}
       </ul>
 
-      <div className="sidebar__divider" />
-
-      <h2 className="sidebar__section-title">Technologies</h2>
-      <ul className="sidebar__tech-list">
-        {technologies.map((tech) => (
-          <li key={tech} className="sidebar__tech-badge">{tech}</li>
-        ))}
-      </ul>
+      {visibility.technologies && (
+        <>
+          <div className="sidebar__divider" />
+          <h2 className="sidebar__section-title">Technologies</h2>
+          <ul className="sidebar__tech-list">
+            {technologies.map((tech, i) => (
+              <li key={i} className="sidebar__tech-badge">
+                <EditableText value={tech} onChange={(v) => setTechnology(i, v)} dark onRemove={() => removeTechnology(i)} />
+              </li>
+            ))}
+            <li>
+              <button type="button" className="sidebar__tech-add" onClick={addTechnology}>
+                <FontAwesomeIcon icon={faPlus} /> Add
+              </button>
+            </li>
+          </ul>
+        </>
+      )}
     </aside>
   );
 }

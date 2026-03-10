@@ -2,8 +2,8 @@
 .cv-page {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   background: #c8cdd4;
 }
 
@@ -16,6 +16,34 @@
   background: #fff;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.22);
   flex-shrink: 0;
+}
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.cv-toolbar {
+  width: 794px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.6rem 0;
+  flex-shrink: 0;
+}
+
+.cv-toolbar__export {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cv-toolbar__export:hover {
+  background: #c0392b;
 }
 
 /* ── Print ──────────────────────────────────────────────────── */
@@ -32,5 +60,17 @@
     box-shadow: none;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  /* Hide all interactive chrome */
+  .cv-toolbar,
+  .editable-text__actions,
+  .btn-add,
+  .btn-add--small,
+  .btn-entry-remove,
+  .btn-remove,
+  .photo-upload__overlay,
+  .photo-upload__remove {
+    display: none !important;
   }
 }

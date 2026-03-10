@@ -1,27 +1,42 @@
-import { EducationEntry } from '../data/cv';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useCvStore } from '../store/cvStore';
+import EditableText from './EditableText';
 import './Education.css';
 
-interface EducationProps {
-  items: EducationEntry[];
-}
+export default function Education() {
+  const { data: { education }, setEducationField, addEducation, removeEducation } = useCvStore();
 
-export default function Education({ items }: EducationProps) {
   return (
     <section className="education">
       <h2 className="cv-section__title">Education</h2>
       <div className="education__list">
-        {items.map((edu, i) => (
+        {education.map((edu, i) => (
           <div key={i} className="education__entry">
             <div className="education__header">
               <div>
-                <h3 className="education__degree">{edu.degree}</h3>
-                <p className="education__institution">{edu.institution}</p>
+                <h3 className="education__degree">
+                  <EditableText value={edu.degree} onChange={(v) => setEducationField(i, 'degree', v)} />
+                </h3>
+                <p className="education__institution">
+                  <EditableText value={edu.institution} onChange={(v) => setEducationField(i, 'institution', v)} />
+                </p>
               </div>
-              <span className="education__period">{edu.period}</span>
+              <div className="education__header-right">
+                <span className="education__period">
+                  <EditableText value={edu.period} onChange={(v) => setEducationField(i, 'period', v)} />
+                </span>
+                <button type="button" className="btn-entry-remove" title="Remove" onClick={() => removeEducation(i)}>
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
+      <button type="button" className="btn-add" onClick={addEducation}>
+        <FontAwesomeIcon icon={faPlus} /> Add education
+      </button>
     </section>
   );
 }

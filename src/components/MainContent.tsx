@@ -1,21 +1,19 @@
-import { CvData } from '../data/cv';
+import { useSettingsStore } from '../store/settingsStore';
 import './MainContent.css';
 import AboutMe from './AboutMe';
 import Experience from './Experience';
 import Education from './Education';
 import Courses from './Courses';
 
-interface MainContentProps {
-  data: CvData;
-}
+export default function MainContent() {
+  const { visibility } = useSettingsStore();
 
-export default function MainContent({ data }: MainContentProps) {
   return (
     <main className="main-content">
-      <AboutMe items={data.aboutMe} />
-      <Experience items={data.experience} />
-      <Education items={data.education} />
-      <Courses items={data.courses} />
+      {visibility.aboutMe    && <AboutMe />}
+      {visibility.experience && <Experience />}
+      {visibility.education  && <Education />}
+      {visibility.courses    && <Courses />}
     </main>
   );
 }

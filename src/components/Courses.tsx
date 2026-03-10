@@ -1,25 +1,40 @@
-import { CourseEntry } from '../data/cv';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useCvStore } from '../store/cvStore';
+import EditableText from './EditableText';
 import './Courses.css';
 
-interface CoursesProps {
-  items: CourseEntry[];
-}
+export default function Courses() {
+  const { data: { courses }, setCourseField, addCourse, removeCourse } = useCvStore();
 
-export default function Courses({ items }: CoursesProps) {
   return (
     <section className="courses">
       <h2 className="cv-section__title">Courses &amp; Certifications</h2>
       <div className="courses__list">
-        {items.map((course, i) => (
+        {courses.map((course, i) => (
           <div key={i} className="courses__entry">
             <div className="courses__info">
-              <h3 className="courses__name">{course.name}</h3>
-              <p className="courses__provider">{course.provider}</p>
+              <h3 className="courses__name">
+                <EditableText value={course.name} onChange={(v) => setCourseField(i, 'name', v)} />
+              </h3>
+              <p className="courses__provider">
+                <EditableText value={course.provider} onChange={(v) => setCourseField(i, 'provider', v)} />
+              </p>
             </div>
-            <span className="courses__year">{course.year}</span>
+            <div className="courses__entry-right">
+              <span className="courses__year">
+                <EditableText value={course.year} onChange={(v) => setCourseField(i, 'year', v)} />
+              </span>
+              <button type="button" className="btn-entry-remove" title="Remove" onClick={() => removeCourse(i)}>
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
+      <button type="button" className="btn-add" onClick={addCourse}>
+        <FontAwesomeIcon icon={faPlus} /> Add course
+      </button>
     </section>
   );
 }

@@ -8,7 +8,7 @@
 }
 
 .cv-section__title {
-  font-size: 1.1rem;
+  font-size: var(--font-size-title, 11px);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;

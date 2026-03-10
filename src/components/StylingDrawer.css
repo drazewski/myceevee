@@ -1,0 +1,102 @@
+.styling-drawer {
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.sd-section-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8a9bb0;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.sd-divider {
+  height: 1px;
+  background: #eef0f3;
+  margin: 0.5rem 0;
+}
+
+.sd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sd-row__label {
+  font-size: 0.8rem;
+  color: #3a4a5a;
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+.sd-row__control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+/* Color picker */
+.sd-color {
+  width: 36px;
+  height: 28px;
+  border: 1.5px solid #d0d8e0;
+  border-radius: 5px;
+  padding: 1px;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.sd-color__hex {
+  font-size: 0.75rem;
+  color: #6a7a8a;
+  font-family: monospace;
+}
+
+/* Select */
+.sd-select {
+  flex: 1;
+  font-size: 0.8rem;
+  border: 1.5px solid #d0d8e0;
+  border-radius: 5px;
+  padding: 0.3rem 0.5rem;
+  background: #fff;
+  color: #1e2a3a;
+  cursor: pointer;
+  outline: none;
+}
+
+.sd-select:focus {
+  border-color: #4a90d9;
+}
+
+/* Slider */
+.sd-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.sd-slider {
+  flex: 1;
+  accent-color: #4a90d9;
+  cursor: pointer;
+}
+
+.sd-slider__value {
+  font-size: 0.75rem;
+  color: #6a7a8a;
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

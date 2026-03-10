@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .experience__entry {
@@ -15,6 +16,17 @@
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 0.5rem;
+}
+
+.experience__header-left {
+  flex: 1;
+}
+
+.experience__header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
 }
 
 .experience__role {
@@ -34,20 +46,95 @@
   font-size: 0.8rem;
   color: #8899aa;
   white-space: nowrap;
-  flex-shrink: 0;
-  padding-top: 0.15rem;
+}
+
+.btn-entry-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.25rem;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.experience__entry:hover .btn-entry-remove {
+  opacity: 1;
+}
+
+.btn-entry-remove:hover {
+  color: #e57373;
 }
 
 .experience__bullets {
-  margin: 0;
+  margin: 0 0 0.5rem;
   padding: 0 0 0 1.1rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.experience__bullets li {
+.experience__bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
   font-size: 0.9rem;
   line-height: 1.55;
   color: #3a4a5a;
+}
+
+.experience__bullet-item .editable-text {
+  flex: 1;
+}
+
+.experience__bullet-item .btn-remove {
+  opacity: 0;
+}
+
+.experience__bullet-item:hover .btn-remove {
+  opacity: 1;
+}
+
+/* Shared add button styles (also used by AboutMe, Education, Courses) */
+.btn-remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.25rem;
+  border-radius: 3px;
+  transition: color 0.15s;
+}
+
+.btn-remove:hover {
+  color: #e57373;
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: 1px dashed var(--color-accent);
+  color: var(--color-accent);
+  cursor: pointer;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.btn-add:hover {
+  opacity: 1;
+}
+
+.btn-add--small {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.1rem;
 }

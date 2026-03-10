@@ -1,0 +1,79 @@
+.elements-drawer {
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ed-section__title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8a9bb0;
+  margin: 0 0 0.5rem;
+}
+
+.ed-divider {
+  height: 1px;
+  background: #eef0f3;
+  margin: 0.5rem 0;
+}
+
+.ed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ed-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+}
+
+.ed-item__label {
+  font-size: 0.82rem;
+  color: #3a4a5a;
+}
+
+/* Toggle switch */
+.ed-toggle {
+  width: 34px;
+  height: 18px;
+  border-radius: 9px;
+  border: none;
+  background: #c8d0da;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.ed-toggle--on {
+  background: #4a90d9;
+}
+
+.ed-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.ed-toggle--on .ed-toggle__thumb {
+  transform: translateX(16px);
+}
