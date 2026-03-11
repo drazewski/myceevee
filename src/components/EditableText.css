@@ -7,6 +7,11 @@
 
 .editable-text__value {
   word-break: break-word;
+  cursor: text;
+}
+
+.editable-text__link {
+  cursor: text;
 }
 
 .editable-text__empty {
@@ -26,11 +31,6 @@
   white-space: nowrap;
 }
 
-.editable-text__link {
-  color: inherit;
-  text-decoration: none;
-}
-
 .editable-text__link:hover {
   text-decoration: underline;
 }
@@ -43,7 +43,6 @@
   margin-left: 0.3rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.05rem;
   opacity: 0;
   transition: opacity 0.15s;
   white-space: nowrap;
@@ -61,7 +60,7 @@
   cursor: pointer;
   padding: 0.2rem;
   color: var(--color-accent);
-  font-size: 0.65rem;
+  font-size: 12px;
   border-radius: 3px;
   line-height: 1;
 }

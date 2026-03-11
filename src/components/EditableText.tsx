@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useFitText } from '../hooks/useFitText';
 import './EditableText.css';
 
@@ -97,6 +97,13 @@ export default function EditableText({
     fitLine ? 'editable-text--fit-line' : '',
   ].filter(Boolean).join(' ');
 
+  const enterEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraft(value);
+    setEditing(true);
+  };
+
   return (
     <span ref={fitLine ? fitRef : undefined} className={wrapperCls} style={fitLine && fitFontSize ? { fontSize: fitFontSize } : undefined}>
       {href ? (
@@ -105,23 +112,15 @@ export default function EditableText({
           target={hrefTarget}
           rel={hrefTarget === '_blank' ? 'noopener noreferrer' : undefined}
           className="editable-text__link"
-          onClick={(e) => e.stopPropagation()}
+          onClick={enterEdit}
         >
           <span className="editable-text__value">{valueContent}</span>
         </a>
       ) : (
-        <span className="editable-text__value">{valueContent}</span>
+        <span className="editable-text__value" onClick={enterEdit}>{valueContent}</span>
       )}
-      <span className="editable-text__actions">
-        <button
-          type="button"
-          className="editable-text__btn"
-          title="Edit"
-          onClick={(e) => { e.stopPropagation(); e.preventDefault(); setDraft(value); setEditing(true); }}
-        >
-          <FontAwesomeIcon icon={faPencil} />
-        </button>
-        {onRemove && (
+      {onRemove && (
+        <span className="editable-text__actions">
           <button
             type="button"
             className="editable-text__btn editable-text__btn--remove"
@@ -130,8 +129,8 @@ export default function EditableText({
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
-        )}
-      </span>
+        </span>
+      )}
     </span>
   );
 }
