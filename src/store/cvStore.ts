@@ -25,6 +25,7 @@ interface CvStore {
   setTechnology: (index: number, value: string) => void;
   addTechnology: () => void;
   removeTechnology: (index: number) => void;
+  reorderTechnologies: (from: number, to: number) => void;
 
   setExperienceField: (index: number, field: keyof Omit<ExperienceEntry, 'bullets'>, value: string) => void;
   setExperienceBullet: (expIndex: number, bulletIndex: number, value: string) => void;
@@ -91,6 +92,13 @@ export const useCvStore = create<CvStore>()(
         set((s) => ({ data: { ...s.data, technologies: [...s.data.technologies, ''] } })),
       removeTechnology: (index) =>
         set((s) => ({ data: { ...s.data, technologies: s.data.technologies.filter((_, i) => i !== index) } })),
+      reorderTechnologies: (from, to) =>
+        set((s) => {
+          const list = [...s.data.technologies];
+          const [item] = list.splice(from, 1);
+          list.splice(to, 0, item);
+          return { data: { ...s.data, technologies: list } };
+        }),
 
       setExperienceField: (index, field, value) =>
         set((s) => ({ data: { ...s.data, experience: updateAt(s.data.experience, index, (e) => ({ ...e, [field]: value })) } })),

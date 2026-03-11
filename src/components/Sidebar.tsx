@@ -7,6 +7,7 @@ import {
   faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { useRef, useState } from 'react';
 import { useCvStore } from '../store/cvStore';
 import { useSettingsStore } from '../store/settingsStore';
 import EditableText from './EditableText';
@@ -17,9 +18,13 @@ export default function Sidebar() {
   const {
     data: { photo, name, title, contact, technologies },
     setName, setTitle, setContact, setPhoto,
-    setTechnology, addTechnology, removeTechnology,
+    setTechnology, addTechnology, removeTechnology, reorderTechnologies,
   } = useCvStore();
   const { visibility } = useSettingsStore();
+
+  const dragIndex = useRef<number | null>(null);
+  const [dragOver, setDragOver] = useState<number | null>(null);
+  const [dragging, setDragging] = useState<number | null>(null);
 
   return (
     <aside className="sidebar">
@@ -83,7 +88,27 @@ export default function Sidebar() {
           <h2 className="sidebar__section-title">Technologies</h2>
           <ul className="sidebar__tech-list">
             {technologies.map((tech, i) => (
-              <li key={i} className="sidebar__tech-badge">
+              <li
+                key={i}
+                className={[
+                  'sidebar__tech-badge',
+                  dragOver === i ? 'sidebar__tech-badge--drag-over' : '',
+                  dragging === i ? 'sidebar__tech-badge--dragging' : '',
+                ].filter(Boolean).join(' ')}
+                draggable
+                onDragStart={() => { dragIndex.current = i; setDragging(i); }}
+                onDragOver={(e) => { e.preventDefault(); setDragOver(i); }}
+                onDragLeave={() => setDragOver(null)}
+                onDrop={() => {
+                  if (dragIndex.current !== null && dragIndex.current !== i) {
+                    reorderTechnologies(dragIndex.current, i);
+                  }
+                  dragIndex.current = null;
+                  setDragOver(null);
+                  setDragging(null);
+                }}
+                onDragEnd={() => { dragIndex.current = null; setDragOver(null); setDragging(null); }}
+              >
                 <EditableText value={tech} onChange={(v) => setTechnology(i, v)} dark onRemove={() => removeTechnology(i)} />
               </li>
             ))}

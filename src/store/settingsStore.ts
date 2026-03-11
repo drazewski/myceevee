@@ -15,10 +15,11 @@ export interface Styling {
   primaryColor: string;
   accentColor: string;
   font: FontKey;
-  fontSizeSidebar: number; // px
-  fontSizeTitle: number;   // px
-  fontSizeBody: number;    // px
-  lineHeight: number;
+  fontSizeSidebar: number;    // px
+  fontSizeTitle: number;      // px
+  fontSizeBody: number;       // px
+  lineHeightSidebar: number;
+  lineHeightBody: number;
 }
 
 export type VisibilityKey =
@@ -42,7 +43,8 @@ const defaultStyling: Styling = {
   fontSizeSidebar: 13,
   fontSizeTitle: 11,
   fontSizeBody: 14,
-  lineHeight: 1.5,
+  lineHeightSidebar: 1.4,
+  lineHeightBody: 1.55,
 };
 
 const defaultVisibility: Visibility = {
@@ -61,6 +63,13 @@ export const useSettingsStore = create<SettingsStore>()(
       setVisibility: (key, value) =>
         set((s) => ({ visibility: { ...s.visibility, [key]: value } })),
     }),
-    { name: 'cv-settings' }
+    {
+      name: 'cv-settings',
+      version: 2,
+      migrate: (_state, _version) => ({
+        styling: defaultStyling,
+        visibility: defaultVisibility,
+      }),
+    }
   )
 );

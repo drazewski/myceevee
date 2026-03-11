@@ -1,6 +1,6 @@
 .about-me__list {
   margin: 0 0 0.5rem;
-  padding: 0 0 0 1.25rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -10,8 +10,8 @@
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: var(--font-size-body, 13px);
+  line-height: var(--line-height-body, 1.6);
   color: #3a4a5a;
 }
 

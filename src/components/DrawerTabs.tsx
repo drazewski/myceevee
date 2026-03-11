@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser, faTableCells, faPalette, faListCheck,
@@ -26,6 +26,20 @@ const TABS: TabDef[] = [
 
 export default function DrawerTabs() {
   const [open, setOpen] = useState<TabId | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
+        setOpen(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
 
   const handleClick = (tab: TabDef) => {
     if (!tab.enabled) return;
@@ -33,7 +47,7 @@ export default function DrawerTabs() {
   };
 
   return (
-    <div className="drawer-root">
+    <div className="drawer-root" ref={rootRef}>
       <div className={`drawer-panel ${open ? 'drawer-panel--open' : ''}`}>
         <div className="drawer-panel__inner">
           {open === 'styling'  && <StylingDrawer />}

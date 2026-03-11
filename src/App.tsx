@@ -10,13 +10,14 @@ export default function App() {
   const { styling } = useSettingsStore();
 
   const cvVars = {
-    '--color-primary':      styling.primaryColor,
-    '--color-accent':       styling.accentColor,
-    '--font-size-sidebar':  `${styling.fontSizeSidebar}px`,
-    '--font-size-title':    `${styling.fontSizeTitle}px`,
-    '--font-size-body':     `${styling.fontSizeBody}px`,
-    '--line-height':        styling.lineHeight,
-    fontFamily:             FONTS[styling.font].css,
+    '--color-primary':        styling.primaryColor,
+    '--color-accent':         styling.accentColor,
+    '--font-size-sidebar':    `${styling.fontSizeSidebar}px`,
+    '--font-size-title':      `${styling.fontSizeTitle}px`,
+    '--font-size-body':       `${styling.fontSizeBody}px`,
+    '--line-height-sidebar':  styling.lineHeightSidebar,
+    '--line-height-body':     styling.lineHeightBody,
+    fontFamily:               FONTS[styling.font].css,
   } as React.CSSProperties;
 
   return (

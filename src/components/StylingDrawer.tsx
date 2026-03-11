@@ -82,14 +82,25 @@ export default function StylingDrawer() {
       <div className="sd-divider" />
       <h3 className="sd-section-title">Spacing</h3>
 
-      <Row label="Line height">
+      <Row label="Sidebar spacing">
         <div className="sd-slider-group">
           <input
-            type="range" min={1.2} max={2.0} step={0.05} value={styling.lineHeight}
-            onChange={(e) => setStyling('lineHeight', Number(e.target.value))}
+            type="range" min={1.2} max={2.0} step={0.05} value={styling.lineHeightSidebar}
+            onChange={(e) => setStyling('lineHeightSidebar', Number(e.target.value))}
             className="sd-slider"
           />
-          <span className="sd-slider__value">{styling.lineHeight.toFixed(2)}</span>
+          <span className="sd-slider__value">{styling.lineHeightSidebar.toFixed(2)}</span>
+        </div>
+      </Row>
+
+      <Row label="Body spacing">
+        <div className="sd-slider-group">
+          <input
+            type="range" min={1.2} max={2.0} step={0.05} value={styling.lineHeightBody}
+            onChange={(e) => setStyling('lineHeightBody', Number(e.target.value))}
+            className="sd-slider"
+          />
+          <span className="sd-slider__value">{styling.lineHeightBody.toFixed(2)}</span>
         </div>
       </Row>
     </div>
