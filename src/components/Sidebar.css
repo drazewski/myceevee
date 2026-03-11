@@ -157,3 +157,14 @@
   color: rgba(255, 255, 255, 0.8);
   border-color: rgba(255, 255, 255, 0.5);
 }
+
+.sidebar__add-section {
+  margin-top: 0.5rem;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.sidebar__add-section:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}

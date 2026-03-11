@@ -12,13 +12,15 @@ import { useCvStore } from '../store/cvStore';
 import { useSettingsStore } from '../store/settingsStore';
 import EditableText from './EditableText';
 import PhotoUpload from './PhotoUpload';
+import CustomSection from './CustomSection';
 import './Sidebar.css';
 
 export default function Sidebar() {
   const {
-    data: { photo, name, title, contact, technologies, sectionTitles },
+    data: { photo, name, title, contact, technologies, sectionTitles, sidebarCustom },
     setName, setTitle, setContact, setPhoto, setSectionTitle,
     setTechnology, addTechnology, removeTechnology, reorderTechnologies,
+    addCustomSection, removeCustomSection, setCustomSectionField,
   } = useCvStore();
   const { visibility } = useSettingsStore();
 
@@ -124,6 +126,28 @@ export default function Sidebar() {
           </ul>
         </>
       )}
+
+      {sidebarCustom.map((sec) => (
+        <div key={sec.id}>
+          <div className="sidebar__divider" />
+          <CustomSection
+            title={sec.title}
+            content={sec.content}
+            dark
+            onChangeTitle={(v) => setCustomSectionField('sidebarCustom', sec.id, 'title', v)}
+            onChangeContent={(v) => setCustomSectionField('sidebarCustom', sec.id, 'content', v)}
+            onRemove={() => removeCustomSection('sidebarCustom', sec.id)}
+          />
+        </div>
+      ))}
+
+      <button
+        type="button"
+        className="sidebar__add-section btn-add btn-add--small"
+        onClick={() => addCustomSection('sidebarCustom')}
+      >
+        <FontAwesomeIcon icon={faPlus} /> Add section
+      </button>
     </aside>
   );
 }

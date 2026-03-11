@@ -1,0 +1,59 @@
+.custom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.custom-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.custom-section__header h2 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.custom-section__remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0.2rem 0.3rem;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  color: #ccc;
+}
+
+.custom-section:hover .custom-section__remove {
+  opacity: 1;
+}
+
+.custom-section__remove:hover {
+  color: #e57373;
+}
+
+.custom-section--dark .custom-section__remove {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.custom-section--dark .custom-section__remove:hover {
+  color: rgba(255, 120, 120, 0.8);
+}
+
+.custom-section__content {
+  font-size: var(--font-size-body, 13px);
+  line-height: var(--line-height-body, 1.55);
+  color: #3a4a5a;
+}
+
+.custom-section--dark .custom-section__content {
+  font-size: var(--font-size-sidebar, 13px);
+  line-height: var(--line-height-sidebar, 1.4);
+  color: rgba(255, 255, 255, 0.75);
+}

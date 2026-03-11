@@ -35,6 +35,12 @@ export interface SectionTitles {
   courses: string;
 }
 
+export interface CustomSection {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export interface CvData {
   photo: string | null;
   name: string;
@@ -46,6 +52,8 @@ export interface CvData {
   experience: ExperienceEntry[];
   education: EducationEntry[];
   courses: CourseEntry[];
+  sidebarCustom: CustomSection[];
+  mainCustom: CustomSection[];
 }
 
 export const cvData: CvData = {
@@ -146,4 +154,7 @@ export const cvData: CvData = {
       year: '2021',
     },
   ],
+
+  sidebarCustom: [],
+  mainCustom: [],
 };

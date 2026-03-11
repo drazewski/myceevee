@@ -5,6 +5,7 @@ import {
   CvData,
   Contact,
   SectionTitles,
+  CustomSection,
   ExperienceEntry,
   EducationEntry,
   CourseEntry,
@@ -44,6 +45,10 @@ interface CvStore {
   setCourseField: (index: number, field: keyof CourseEntry, value: string) => void;
   addCourse: () => void;
   removeCourse: (index: number) => void;
+
+  addCustomSection: (area: 'sidebarCustom' | 'mainCustom') => void;
+  removeCustomSection: (area: 'sidebarCustom' | 'mainCustom', id: string) => void;
+  setCustomSectionField: (area: 'sidebarCustom' | 'mainCustom', id: string, field: keyof Omit<CustomSection, 'id'>, value: string) => void;
 }
 
 const emptyExperience: ExperienceEntry = {
@@ -153,10 +158,27 @@ export const useCvStore = create<CvStore>()(
         set((s) => ({ data: { ...s.data, courses: [...s.data.courses, { ...emptyCourse }] } })),
       removeCourse: (index) =>
         set((s) => ({ data: { ...s.data, courses: s.data.courses.filter((_, i) => i !== index) } })),
+
+      addCustomSection: (area) =>
+        set((s) => ({
+          data: {
+            ...s.data,
+            [area]: [...s.data[area], { id: crypto.randomUUID(), title: 'Section Title', content: 'Your text here.' }],
+          },
+        })),
+      removeCustomSection: (area, id) =>
+        set((s) => ({ data: { ...s.data, [area]: s.data[area].filter((sec) => sec.id !== id) } })),
+      setCustomSectionField: (area, id, field, value) =>
+        set((s) => ({
+          data: {
+            ...s.data,
+            [area]: s.data[area].map((sec) => sec.id === id ? { ...sec, [field]: value } : sec),
+          },
+        })),
     }),
     {
       name: 'cv-data',
-      version: 2,
+      version: 3,
       migrate: (stored: unknown, _version: number) => {
         const s = stored as { data?: Partial<CvData> };
         return {
@@ -167,6 +189,8 @@ export const useCvStore = create<CvStore>()(
               ...defaultData.sectionTitles,
               ...(s?.data?.sectionTitles ?? {}),
             },
+            sidebarCustom: s?.data?.sidebarCustom ?? [],
+            mainCustom: s?.data?.mainCustom ?? [],
           },
         };
       },
