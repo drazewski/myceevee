@@ -38,8 +38,78 @@
 .cv-toolbar {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.6rem 0;
   flex-shrink: 0;
+}
+
+.cv-toolbar__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  color: #6b7a8d;
+  border: 1px solid #c8cdd4;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.cv-toolbar__reset:hover {
+  background: #f0f4f8;
+  border-color: #a0aab8;
+  color: #3a4a5a;
+}
+
+.cv-toolbar__preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cv-toolbar__preview:hover {
+  background: #27ae60;
+}
+
+.cv-toolbar__preview--active {
+  background: #4a90d9;
+}
+
+.cv-toolbar__preview--active:hover {
+  background: #357abd;
+}
+
+/* ── Preview mode ───────────────────────────────────────────── */
+.cv-page.is-preview .cv-layout {
+  pointer-events: none;
+}
+
+.cv-page.is-preview .drawer-root {
+  display: none;
+}
+
+.cv-page.is-preview .editable-text__actions,
+.cv-page.is-preview .btn-add,
+.cv-page.is-preview .btn-add--small,
+.cv-page.is-preview .btn-entry-remove,
+.cv-page.is-preview .btn-remove,
+.cv-page.is-preview .sidebar__tech-add,
+.cv-page.is-preview .photo-upload__overlay,
+.cv-page.is-preview .photo-upload__remove {
+  display: none !important;
 }
 
 .cv-toolbar__export {
@@ -84,6 +154,7 @@
   .btn-add--small,
   .btn-entry-remove,
   .btn-remove,
+  .sidebar__tech-add,
   .photo-upload__overlay,
   .photo-upload__remove {
     display: none !important;

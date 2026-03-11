@@ -49,6 +49,8 @@ interface CvStore {
   addCustomSection: (area: 'sidebarCustom' | 'mainCustom') => void;
   removeCustomSection: (area: 'sidebarCustom' | 'mainCustom', id: string) => void;
   setCustomSectionField: (area: 'sidebarCustom' | 'mainCustom', id: string, field: keyof Omit<CustomSection, 'id'>, value: string) => void;
+
+  resetData: () => void;
 }
 
 const emptyExperience: ExperienceEntry = {
@@ -175,6 +177,8 @@ export const useCvStore = create<CvStore>()(
             [area]: s.data[area].map((sec) => sec.id === id ? { ...sec, [field]: value } : sec),
           },
         })),
+
+      resetData: () => set({ data: defaultData }),
     }),
     {
       name: 'cv-data',

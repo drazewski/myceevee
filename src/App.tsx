@@ -1,18 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faFilePdf, faRotateLeft, faEye, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
 import DrawerTabs from './components/DrawerTabs';
+import ResetModal from './components/ResetModal';
 import { useSettingsStore, FONTS } from './store/settingsStore';
+import { useCvStore } from './store/cvStore';
 
 const CV_WIDTH = 794;
 
 export default function App() {
-  const { styling } = useSettingsStore();
+  const { styling, resetLayout } = useSettingsStore();
+  const { resetData } = useCvStore();
   const scalerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [showReset, setShowReset] = useState(false);
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     const update = () => {
@@ -36,12 +41,22 @@ export default function App() {
   } as React.CSSProperties;
 
   return (
-    <div className="cv-page">
+    <div className={`cv-page${preview ? ' is-preview' : ''}`}>
       <div className="cv-toolbar" style={{ width: CV_WIDTH * scale }}>
-        <button className="cv-toolbar__export" onClick={() => window.print()}>
-          <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-        </button>
-      </div>
+          <button className="cv-toolbar__reset" onClick={() => setShowReset(true)}>
+            <FontAwesomeIcon icon={faRotateLeft} /> Reset
+          </button>
+          <button
+            className={`cv-toolbar__preview${preview ? ' cv-toolbar__preview--active' : ''}`}
+            onClick={() => setPreview((p) => !p)}
+          >
+            <FontAwesomeIcon icon={preview ? faPenToSquare : faEye} />
+            {preview ? ' Edit mode' : ' Preview'}
+          </button>
+          <button className="cv-toolbar__export" onClick={() => window.print()}>
+            <FontAwesomeIcon icon={faFilePdf} /> Export PDF
+          </button>
+        </div>
       <div className="cv-scaler" ref={scalerRef}>
         <div
           className="cv-scaler__inner"
@@ -57,6 +72,14 @@ export default function App() {
         </div>
       </div>
       <DrawerTabs />
+      {showReset && (
+        <ResetModal
+          onResetLayout={() => { resetLayout(); setShowReset(false); }}
+          onResetData={() => { resetData(); setShowReset(false); }}
+          onResetAll={() => { resetLayout(); resetData(); setShowReset(false); }}
+          onClose={() => setShowReset(false)}
+        />
+      )}
     </div>
   );
 }

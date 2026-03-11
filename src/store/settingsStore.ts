@@ -36,6 +36,7 @@ interface SettingsStore {
   setVisibility: (key: VisibilityKey, value: boolean) => void;
   reorderSidebar: (from: number, to: number) => void;
   reorderMain: (from: number, to: number) => void;
+  resetLayout: () => void;
 }
 
 const defaultStyling: Styling = {
@@ -80,6 +81,13 @@ export const useSettingsStore = create<SettingsStore>()(
         set((s) => ({ sidebarOrder: reorder(s.sidebarOrder, from, to) })),
       reorderMain: (from, to) =>
         set((s) => ({ mainOrder: reorder(s.mainOrder, from, to) })),
+      resetLayout: () =>
+        set({
+          styling: defaultStyling,
+          visibility: defaultVisibility,
+          sidebarOrder: defaultSidebarOrder,
+          mainOrder: defaultMainOrder,
+        }),
     }),
     {
       name: 'cv-settings',
