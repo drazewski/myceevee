@@ -6,15 +6,17 @@ import './Experience.css';
 
 export default function Experience() {
   const {
-    data: { experience },
-    setExperienceField,
+    data: { experience, sectionTitles },
+    setExperienceField, setSectionTitle,
     setExperienceBullet, addExperienceBullet, removeExperienceBullet,
     addExperience, removeExperience,
   } = useCvStore();
 
   return (
     <section className="experience">
-      <h2 className="cv-section__title">Experience</h2>
+      <h2 className="cv-section__title">
+        <EditableText value={sectionTitles.experience} onChange={(v) => setSectionTitle('experience', v)} />
+      </h2>
       <div className="experience__list">
         {experience.map((job, i) => (
           <article key={i} className="experience__entry">

@@ -1,9 +1,13 @@
+import { useCvStore } from '../store/cvStore';
 import { useSettingsStore, VisibilityKey } from '../store/settingsStore';
+import { SectionTitles } from '../data/cv';
+import EditableText from './EditableText';
 import './ElementsDrawer.css';
 
 interface ToggleItem {
   key: VisibilityKey;
   label: string;
+  titleKey?: keyof SectionTitles;
 }
 
 const SIDEBAR_ITEMS: ToggleItem[] = [
@@ -15,14 +19,14 @@ const SIDEBAR_ITEMS: ToggleItem[] = [
   { key: 'webpage',      label: 'Website' },
   { key: 'github',       label: 'GitHub' },
   { key: 'linkedin',     label: 'LinkedIn' },
-  { key: 'technologies', label: 'Technologies' },
+  { key: 'technologies', label: 'Technologies', titleKey: 'technologies' },
 ];
 
 const MAIN_ITEMS: ToggleItem[] = [
-  { key: 'aboutMe',    label: 'About Me' },
-  { key: 'experience', label: 'Experience' },
-  { key: 'education',  label: 'Education' },
-  { key: 'courses',    label: 'Courses & Certifications' },
+  { key: 'aboutMe',    label: 'About Me',               titleKey: 'aboutMe' },
+  { key: 'experience', label: 'Experience',              titleKey: 'experience' },
+  { key: 'education',  label: 'Education',               titleKey: 'education' },
+  { key: 'courses',    label: 'Courses & Certifications', titleKey: 'courses' },
 ];
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -41,13 +45,24 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 function Section({ title, items }: { title: string; items: ToggleItem[] }) {
   const { visibility, setVisibility } = useSettingsStore();
+  const { data: { sectionTitles }, setSectionTitle } = useCvStore();
+
   return (
     <div className="ed-section">
       <h3 className="ed-section__title">{title}</h3>
       <ul className="ed-list">
-        {items.map(({ key, label }) => (
+        {items.map(({ key, label, titleKey }) => (
           <li key={key} className="ed-item">
-            <span className="ed-item__label">{label}</span>
+            {titleKey ? (
+              <span className="ed-item__label ed-item__label--editable">
+                <EditableText
+                  value={sectionTitles[titleKey]}
+                  onChange={(v) => setSectionTitle(titleKey, v)}
+                />
+              </span>
+            ) : (
+              <span className="ed-item__label">{label}</span>
+            )}
             <Toggle checked={visibility[key]} onChange={(v) => setVisibility(key, v)} />
           </li>
         ))}

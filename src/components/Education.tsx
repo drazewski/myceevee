@@ -5,11 +5,13 @@ import EditableText from './EditableText';
 import './Education.css';
 
 export default function Education() {
-  const { data: { education }, setEducationField, addEducation, removeEducation } = useCvStore();
+  const { data: { education, sectionTitles }, setEducationField, addEducation, removeEducation, setSectionTitle } = useCvStore();
 
   return (
     <section className="education">
-      <h2 className="cv-section__title">Education</h2>
+      <h2 className="cv-section__title">
+        <EditableText value={sectionTitles.education} onChange={(v) => setSectionTitle('education', v)} />
+      </h2>
       <div className="education__list">
         {education.map((edu, i) => (
           <div key={i} className="education__entry">

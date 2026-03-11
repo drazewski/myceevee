@@ -5,11 +5,13 @@ import EditableText from './EditableText';
 import './AboutMe.css';
 
 export default function AboutMe() {
-  const { data: { aboutMe }, setAboutMeItem, addAboutMeItem, removeAboutMeItem } = useCvStore();
+  const { data: { aboutMe, sectionTitles }, setAboutMeItem, addAboutMeItem, removeAboutMeItem, setSectionTitle } = useCvStore();
 
   return (
     <section className="about-me">
-      <h2 className="cv-section__title">About Me</h2>
+      <h2 className="cv-section__title">
+        <EditableText value={sectionTitles.aboutMe} onChange={(v) => setSectionTitle('aboutMe', v)} />
+      </h2>
       <ul className="about-me__list">
         {aboutMe.map((point, i) => (
           <li key={i} className="about-me__item">

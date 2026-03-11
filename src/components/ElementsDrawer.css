@@ -42,6 +42,13 @@
 .ed-item__label {
   font-size: 0.82rem;
   color: #3a4a5a;
+  flex: 1;
+  min-width: 0;
+}
+
+.ed-item__label--editable {
+  display: flex;
+  align-items: center;
 }
 
 /* Toggle switch */

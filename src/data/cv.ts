@@ -27,12 +27,21 @@ export interface CourseEntry {
   year: string;
 }
 
+export interface SectionTitles {
+  technologies: string;
+  aboutMe: string;
+  experience: string;
+  education: string;
+  courses: string;
+}
+
 export interface CvData {
   photo: string | null;
   name: string;
   title: string;
   contact: Contact;
   technologies: string[];
+  sectionTitles: SectionTitles;
   aboutMe: string[];
   experience: ExperienceEntry[];
   education: EducationEntry[];
@@ -57,6 +66,14 @@ export const cvData: CvData = {
     'JavaScript', 'TypeScript', 'React', 'Node.js',
     'Python', 'Docker', 'PostgreSQL', 'GraphQL',
   ],
+
+  sectionTitles: {
+    technologies: 'Technologies',
+    aboutMe: 'About Me',
+    experience: 'Experience',
+    education: 'Education',
+    courses: 'Courses & Certifications',
+  },
 
   aboutMe: [
     'Passionate about building scalable and maintainable web applications.',

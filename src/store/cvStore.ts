@@ -4,6 +4,7 @@ import {
   cvData as defaultData,
   CvData,
   Contact,
+  SectionTitles,
   ExperienceEntry,
   EducationEntry,
   CourseEntry,
@@ -17,6 +18,8 @@ interface CvStore {
   setPhoto: (value: string | null) => void;
 
   setContact: (field: keyof Contact, value: string) => void;
+
+  setSectionTitle: (section: keyof SectionTitles, value: string) => void;
 
   setAboutMeItem: (index: number, value: string) => void;
   addAboutMeItem: () => void;
@@ -78,6 +81,9 @@ export const useCvStore = create<CvStore>()(
 
       setContact: (field, value) =>
         set((s) => ({ data: { ...s.data, contact: { ...s.data.contact, [field]: value } } })),
+
+      setSectionTitle: (section, value) =>
+        set((s) => ({ data: { ...s.data, sectionTitles: { ...s.data.sectionTitles, [section]: value } } })),
 
       setAboutMeItem: (index, value) =>
         set((s) => ({ data: { ...s.data, aboutMe: updateAt(s.data.aboutMe, index, () => value) } })),
@@ -148,6 +154,22 @@ export const useCvStore = create<CvStore>()(
       removeCourse: (index) =>
         set((s) => ({ data: { ...s.data, courses: s.data.courses.filter((_, i) => i !== index) } })),
     }),
-    { name: 'cv-data' }
+    {
+      name: 'cv-data',
+      version: 2,
+      migrate: (stored: unknown, _version: number) => {
+        const s = stored as { data?: Partial<CvData> };
+        return {
+          data: {
+            ...defaultData,
+            ...(s?.data ?? {}),
+            sectionTitles: {
+              ...defaultData.sectionTitles,
+              ...(s?.data?.sectionTitles ?? {}),
+            },
+          },
+        };
+      },
+    }
   )
 );

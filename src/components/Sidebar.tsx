@@ -16,8 +16,8 @@ import './Sidebar.css';
 
 export default function Sidebar() {
   const {
-    data: { photo, name, title, contact, technologies },
-    setName, setTitle, setContact, setPhoto,
+    data: { photo, name, title, contact, technologies, sectionTitles },
+    setName, setTitle, setContact, setPhoto, setSectionTitle,
     setTechnology, addTechnology, removeTechnology, reorderTechnologies,
   } = useCvStore();
   const { visibility } = useSettingsStore();
@@ -87,7 +87,9 @@ export default function Sidebar() {
       {visibility.technologies && (
         <>
           <div className="sidebar__divider" />
-          <h2 className="sidebar__section-title">Technologies</h2>
+          <h2 className="sidebar__section-title">
+            <EditableText value={sectionTitles.technologies} onChange={(v) => setSectionTitle('technologies', v)} dark />
+          </h2>
           <ul className="sidebar__tech-list">
             {technologies.map((tech, i) => (
               <li

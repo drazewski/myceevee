@@ -26,15 +26,14 @@
 .sd-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .sd-row__label {
   font-size: 0.8rem;
   color: #3a4a5a;
-  flex-shrink: 0;
-  min-width: 90px;
+  flex: 0 0 110px;
 }
 
 .sd-row__control {
@@ -42,6 +41,7 @@
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0;
 }
 
 /* Color picker */
@@ -83,7 +83,6 @@
 .sd-slider-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   flex: 1;
 }
 
@@ -96,7 +95,7 @@
 .sd-slider__value {
   font-size: 0.75rem;
   color: #6a7a8a;
-  min-width: 2.5rem;
+  min-width: 1.5rem;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
