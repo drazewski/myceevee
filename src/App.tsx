@@ -42,21 +42,31 @@ export default function App() {
 
   return (
     <div className={`cv-page${preview ? ' is-preview' : ''}`}>
-      <div className="cv-toolbar" style={{ width: CV_WIDTH * scale }}>
-          <button className="cv-toolbar__reset" onClick={() => setShowReset(true)}>
-            <FontAwesomeIcon icon={faRotateLeft} /> Reset
-          </button>
-          <button
-            className={`cv-toolbar__preview${preview ? ' cv-toolbar__preview--active' : ''}`}
-            onClick={() => setPreview((p) => !p)}
-          >
-            <FontAwesomeIcon icon={preview ? faPenToSquare : faEye} />
-            {preview ? ' Edit mode' : ' Preview'}
-          </button>
-          <button className="cv-toolbar__export" onClick={() => window.print()}>
-            <FontAwesomeIcon icon={faFilePdf} /> Export PDF
-          </button>
+      <header className="cv-header">
+        <div className="cv-toolbar" style={{ width: CV_WIDTH * scale }}>
+          <a href="/" className="cv-toolbar__logo" title="MyCeeVee">
+            My<span className="cv-toolbar__logo-c">C</span><span className="cv-toolbar__logo-ee">ee</span><span className="cv-toolbar__logo-v">V</span><span className="cv-toolbar__logo-ee">ee</span>
+          </a>
+          <div className="cv-toolbar__actions">
+            <button className="cv-toolbar__reset" onClick={() => setShowReset(true)} title="Reset">
+              <FontAwesomeIcon icon={faRotateLeft} />
+              <span className="cv-toolbar__btn-label"> Reset</span>
+            </button>
+            <button
+              className={`cv-toolbar__preview${preview ? ' cv-toolbar__preview--active' : ''}`}
+              onClick={() => setPreview((p) => !p)}
+              title={preview ? 'Edit mode' : 'Preview'}
+            >
+              <FontAwesomeIcon icon={preview ? faPenToSquare : faEye} />
+              <span className="cv-toolbar__btn-label">{preview ? ' Edit mode' : ' Preview'}</span>
+            </button>
+            <button className="cv-toolbar__export" onClick={() => window.print()} title="Export PDF">
+              <FontAwesomeIcon icon={faFilePdf} />
+              <span className="cv-toolbar__btn-label"> Export PDF</span>
+            </button>
+          </div>
         </div>
+      </header>
       <div className="cv-scaler" ref={scalerRef}>
         <div
           className="cv-scaler__inner"
