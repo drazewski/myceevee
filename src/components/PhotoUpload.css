@@ -6,8 +6,8 @@
 
 .photo-upload__trigger {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: var(--photo-size-classic, 120px);
+  height: var(--photo-size-classic, 120px);
   border-radius: 50%;
   border: 1px solid var(--color-accent);
   padding: 0;

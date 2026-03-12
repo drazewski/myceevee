@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export type LayoutId = 'classic' | 'us-single';
+
 export type FontKey = 'system' | 'inter' | 'lato' | 'merriweather' | 'playfair';
 
 export const FONTS: Record<FontKey, { label: string; css: string }> = {
@@ -20,6 +22,15 @@ export interface Styling {
   fontSizeBody: number;
   lineHeightSidebar: number;
   lineHeightBody: number;
+  // US single-column layout
+  fontSizeUSName: number;
+  fontSizeUSTitle: number;
+  fontSizeUSContact: number;
+  lineHeightUSHeader: number;
+  showContactIcons: boolean;
+  // Photo size (per layout)
+  photoSizeClassic: number;
+  photoSizeUS: number;
 }
 
 export type SidebarKey = 'photo' | 'name' | 'title' | 'position' | 'location' | 'email' | 'webpage' | 'github' | 'linkedin' | 'technologies';
@@ -28,6 +39,7 @@ export type VisibilityKey = SidebarKey | MainKey;
 export type Visibility = Record<VisibilityKey, boolean>;
 
 interface SettingsStore {
+  layoutId: LayoutId;
   styling: Styling;
   visibility: Visibility;
   sidebarOrder: SidebarKey[];
@@ -37,6 +49,7 @@ interface SettingsStore {
   reorderSidebar: (from: number, to: number) => void;
   reorderMain: (from: number, to: number) => void;
   resetLayout: () => void;
+  setLayout: (id: LayoutId) => void;
 }
 
 const defaultStyling: Styling = {
@@ -48,6 +61,13 @@ const defaultStyling: Styling = {
   fontSizeBody: 14,
   lineHeightSidebar: 1.4,
   lineHeightBody: 1.55,
+  fontSizeUSName: 28,
+  fontSizeUSTitle: 14,
+  fontSizeUSContact: 12,
+  lineHeightUSHeader: 1.5,
+  showContactIcons: true,
+  photoSizeClassic: 120,
+  photoSizeUS: 80,
 };
 
 const defaultVisibility: Visibility = {
@@ -66,9 +86,13 @@ function reorder<T>(arr: T[], from: number, to: number): T[] {
   return next;
 }
 
+const isMobileScreen = () =>
+  typeof window !== 'undefined' && window.innerWidth < 768;
+
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
+      layoutId: isMobileScreen() ? 'us-single' : 'classic',
       styling: defaultStyling,
       visibility: defaultVisibility,
       sidebarOrder: defaultSidebarOrder,
@@ -83,16 +107,19 @@ export const useSettingsStore = create<SettingsStore>()(
         set((s) => ({ mainOrder: reorder(s.mainOrder, from, to) })),
       resetLayout: () =>
         set({
+          layoutId: isMobileScreen() ? 'us-single' : 'classic',
           styling: defaultStyling,
           visibility: defaultVisibility,
           sidebarOrder: defaultSidebarOrder,
           mainOrder: defaultMainOrder,
         }),
+      setLayout: (id) => set({ layoutId: id }),
     }),
     {
       name: 'cv-settings',
-      version: 5,
+      version: 8,
       migrate: (_state, _version) => ({
+        layoutId: isMobileScreen() ? 'us-single' : 'classic',
         styling: defaultStyling,
         visibility: defaultVisibility,
         sidebarOrder: defaultSidebarOrder,

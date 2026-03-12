@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import USLayout from './components/USLayout';
 import DrawerTabs from './components/DrawerTabs';
 import ResetModal from './components/ResetModal';
 import { useSettingsStore, FONTS } from './store/settingsStore';
@@ -12,7 +13,7 @@ import { useCvStore } from './store/cvStore';
 const CV_WIDTH = 794;
 
 export default function App() {
-  const { styling, resetLayout } = useSettingsStore();
+  const { styling, resetLayout, layoutId } = useSettingsStore();
   const { resetData } = useCvStore();
   const scalerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -30,14 +31,20 @@ export default function App() {
   }, []);
 
   const cvVars = {
-    '--color-primary':        styling.primaryColor,
-    '--color-accent':         styling.accentColor,
-    '--font-size-sidebar':    `${styling.fontSizeSidebar}px`,
-    '--font-size-title':      `${styling.fontSizeTitle}px`,
-    '--font-size-body':       `${styling.fontSizeBody}px`,
-    '--line-height-sidebar':  styling.lineHeightSidebar,
-    '--line-height-body':     styling.lineHeightBody,
-    fontFamily:               FONTS[styling.font].css,
+    '--color-primary':         styling.primaryColor,
+    '--color-accent':          styling.accentColor,
+    '--font-size-sidebar':     `${styling.fontSizeSidebar}px`,
+    '--font-size-title':       `${styling.fontSizeTitle}px`,
+    '--font-size-body':        `${styling.fontSizeBody}px`,
+    '--line-height-sidebar':   styling.lineHeightSidebar,
+    '--line-height-body':      styling.lineHeightBody,
+    '--font-size-us-name':     `${styling.fontSizeUSName}px`,
+    '--font-size-us-title':    `${styling.fontSizeUSTitle}px`,
+    '--font-size-us-contact':  `${styling.fontSizeUSContact}px`,
+    '--line-height-us-header': styling.lineHeightUSHeader,
+    '--photo-size-classic':    `${styling.photoSizeClassic}px`,
+    '--photo-size-us':         `${styling.photoSizeUS}px`,
+    fontFamily:                FONTS[styling.font].css,
   } as React.CSSProperties;
 
   return (
@@ -76,8 +83,14 @@ export default function App() {
           }}
         >
           <div className="cv-layout" style={cvVars}>
-            <Sidebar />
-            <MainContent />
+            {layoutId === 'classic' ? (
+              <>
+                <Sidebar />
+                <MainContent />
+              </>
+            ) : (
+              <USLayout />
+            )}
           </div>
         </div>
       </div>

@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPalette, faListCheck,
+  faPalette, faListCheck, faTableCells,
 } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import StylingDrawer from './StylingDrawer';
 import ElementsDrawer from './ElementsDrawer';
+import LayoutsDrawer from './LayoutsDrawer';
 import './DrawerTabs.css';
 
-type TabId = 'styling' | 'elements';
+type TabId = 'styling' | 'elements' | 'layouts';
 
 interface TabDef {
   id: TabId;
@@ -17,8 +18,9 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { id: 'styling',  label: 'Styling',  icon: faPalette   },
-  { id: 'elements', label: 'Elements', icon: faListCheck  },
+  { id: 'layouts',  label: 'Layouts',  icon: faTableCells },
+  { id: 'elements', label: 'Elements', icon: faListCheck   },
+  { id: 'styling',  label: 'Styling',  icon: faPalette    },
 ];
 
 export default function DrawerTabs() {
@@ -48,6 +50,7 @@ export default function DrawerTabs() {
         <div className="drawer-panel__inner">
           {open === 'styling'  && <StylingDrawer />}
           {open === 'elements' && <ElementsDrawer />}
+          {open === 'layouts'  && <LayoutsDrawer />}
         </div>
       </div>
 

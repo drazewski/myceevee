@@ -55,6 +55,11 @@
   cursor: grab;
 }
 
+.ed-item__grip--spacer {
+  width: 11px;
+  cursor: default;
+}
+
 .ed-item__label {
   font-size: 0.82rem;
   color: #3a4a5a;

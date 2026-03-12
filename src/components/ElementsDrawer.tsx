@@ -105,26 +105,110 @@ function DraggableSection<K extends VisibilityKey>({
   );
 }
 
+const US_HEADER_FIXED: SidebarKey[] = ['photo', 'title'];
+const US_CONTACT_KEY_SET = new Set<SidebarKey>(['position', 'location', 'email', 'webpage', 'github', 'linkedin']);
+
+function StaticSection({ title, keys, labels }: {
+  title: string;
+  keys: SidebarKey[];
+  labels: Record<SidebarKey, string>;
+}) {
+  const { visibility, setVisibility } = useSettingsStore();
+  return (
+    <div className="ed-section">
+      <h3 className="ed-section__title">{title}</h3>
+      <ul className="ed-list">
+        {keys.map((key) => (
+          <li key={key} className="ed-item">
+            <span className="ed-item__grip ed-item__grip--spacer" />
+            <span className="ed-item__label">{labels[key]}</span>
+            <Toggle
+              checked={visibility[key]}
+              onChange={(v) => setVisibility(key as VisibilityKey, v)}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function ElementsDrawer() {
-  const { sidebarOrder, mainOrder, reorderSidebar, reorderMain } = useSettingsStore();
+  const { sidebarOrder, mainOrder, reorderSidebar, reorderMain, layoutId, visibility, setVisibility } = useSettingsStore();
+
+  // Contact items ordered by sidebarOrder (for US layout)
+  const contactOrder = sidebarOrder.filter((k): k is SidebarKey => US_CONTACT_KEY_SET.has(k));
+
+  // Map a drag within contactOrder back to a reorder in the full sidebarOrder
+  const reorderContact = (from: number, to: number) => {
+    const fromKey = contactOrder[from];
+    const toKey = contactOrder[to];
+    const fromIdx = sidebarOrder.indexOf(fromKey);
+    const toIdx = sidebarOrder.indexOf(toKey);
+    if (fromIdx !== -1 && toIdx !== -1) reorderSidebar(fromIdx, toIdx);
+  };
 
   return (
     <div className="elements-drawer">
-      <DraggableSection
-        title="Sidebar"
-        order={sidebarOrder}
-        labels={SIDEBAR_LABELS}
-        titleKeys={SIDEBAR_TITLE_KEYS}
-        onReorder={reorderSidebar}
-      />
-      <div className="ed-divider" />
-      <DraggableSection
-        title="Main content"
-        order={mainOrder}
-        labels={MAIN_LABELS}
-        titleKeys={MAIN_TITLE_KEYS}
-        onReorder={reorderMain}
-      />
+      {layoutId === 'us-single' ? (
+        <>
+          <StaticSection
+            title="Header"
+            keys={US_HEADER_FIXED}
+            labels={SIDEBAR_LABELS}
+          />
+          <div className="ed-divider" />
+          <DraggableSection
+            title="Contact"
+            order={contactOrder}
+            labels={SIDEBAR_LABELS}
+            titleKeys={SIDEBAR_TITLE_KEYS}
+            onReorder={reorderContact}
+          />
+          <div className="ed-divider" />
+          <DraggableSection
+            title="Main content"
+            order={mainOrder}
+            labels={MAIN_LABELS}
+            titleKeys={MAIN_TITLE_KEYS}
+            onReorder={reorderMain}
+          />
+          <div className="ed-divider" />
+          <div className="ed-section">
+            <h3 className="ed-section__title">Technologies</h3>
+            <ul className="ed-list">
+              <li className="ed-item">
+                <span className="ed-item__grip ed-item__grip--spacer" />
+                <span className="ed-item__label">{SIDEBAR_LABELS.technologies}</span>
+                <Toggle
+                  checked={visibility.technologies}
+                  onChange={(v) => setVisibility('technologies', v)}
+                />
+              </li>
+            </ul>
+          </div>
+        </>
+      ) : (
+        <DraggableSection
+          title="Sidebar"
+          order={sidebarOrder}
+          labels={SIDEBAR_LABELS}
+          titleKeys={SIDEBAR_TITLE_KEYS}
+          onReorder={reorderSidebar}
+        />
+      )}
+      {layoutId !== 'us-single' && (
+        <>
+          <div className="ed-divider" />
+          <DraggableSection
+            title="Main content"
+            order={mainOrder}
+            labels={MAIN_LABELS}
+            titleKeys={MAIN_TITLE_KEYS}
+            onReorder={reorderMain}
+          />
+        </>
+      )}
     </div>
   );
 }

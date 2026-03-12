@@ -99,3 +99,31 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+/* Boolean toggle (reuses ed-toggle pattern) */
+.sd-toggle {
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  background: #c8d0da;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+.sd-toggle--on { background: #4a90d9; }
+.sd-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.sd-toggle--on .sd-toggle__thumb { transform: translateX(16px); }
