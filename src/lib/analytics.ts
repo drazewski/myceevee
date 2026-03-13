@@ -6,7 +6,11 @@ const POSTHOG_HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST as string;
 
 let initialised = false;
 
+const IS_LOCAL = typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 export function initAnalytics() {
+  if (IS_LOCAL) return;
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
     // Don't capture anything until consent is granted
