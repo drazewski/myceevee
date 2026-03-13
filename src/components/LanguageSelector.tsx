@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCvStore } from '../store/cvStore';
 import { CvLanguage, SECTION_TITLE_DEFAULTS } from '../data/cv';
+import { Analytics } from '../lib/analytics';
 import './LanguageSelector.css';
 
 const LANGUAGES: { code: CvLanguage; label: string; flag: string }[] = [
@@ -26,12 +27,16 @@ export default function LanguageSelector() {
     if (customized) {
       setConfirm(lang);
     } else {
+      Analytics.languageChanged(lang);
       setCvLanguage(lang);
     }
   };
 
   const applyChange = () => {
-    if (confirm) setCvLanguage(confirm);
+    if (confirm) {
+      Analytics.languageChanged(confirm);
+      setCvLanguage(confirm);
+    }
     setConfirm(null);
   };
 

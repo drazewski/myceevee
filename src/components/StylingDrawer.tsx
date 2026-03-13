@@ -1,4 +1,5 @@
 import { useSettingsStore, FONTS, FontKey } from '../store/settingsStore';
+import { Analytics } from '../lib/analytics';
 import './StylingDrawer.css';
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -70,7 +71,7 @@ export default function StylingDrawer() {
       <Row label="Primary">
         <input
           type="color" value={styling.primaryColor}
-          onChange={(e) => setStyling('primaryColor', e.target.value)}
+          onChange={(e) => { Analytics.colorChanged(e.target.value); setStyling('primaryColor', e.target.value); }}
           className="sd-color"
         />
         <span className="sd-color__hex">{styling.primaryColor}</span>
@@ -79,7 +80,7 @@ export default function StylingDrawer() {
       <Row label="Accent">
         <input
           type="color" value={styling.accentColor}
-          onChange={(e) => setStyling('accentColor', e.target.value)}
+          onChange={(e) => { Analytics.colorChanged(e.target.value); setStyling('accentColor', e.target.value); }}
           className="sd-color"
         />
         <span className="sd-color__hex">{styling.accentColor}</span>

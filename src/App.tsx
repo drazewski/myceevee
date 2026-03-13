@@ -9,6 +9,7 @@ import DrawerTabs from './components/DrawerTabs';
 import ResetModal from './components/ResetModal';
 import { useSettingsStore, FONTS } from './store/settingsStore';
 import { useCvStore } from './store/cvStore';
+import { Analytics } from './lib/analytics';
 
 const CV_WIDTH = 794;
 
@@ -67,7 +68,7 @@ export default function App() {
               <FontAwesomeIcon icon={preview ? faPenToSquare : faEye} />
               <span className="cv-toolbar__btn-label">{preview ? ' Edit mode' : ' Preview'}</span>
             </button>
-            <button className="cv-toolbar__export" onClick={() => window.print()} title="Export PDF">
+            <button className="cv-toolbar__export" onClick={() => { Analytics.cvExported(); window.print(); }} title="Export PDF">
               <FontAwesomeIcon icon={faFilePdf} />
               <span className="cv-toolbar__btn-label"> Export PDF</span>
             </button>
@@ -97,9 +98,9 @@ export default function App() {
       <DrawerTabs />
       {showReset && (
         <ResetModal
-          onResetLayout={() => { resetLayout(); setShowReset(false); }}
-          onResetData={() => { resetData(); setShowReset(false); }}
-          onResetAll={() => { resetLayout(); resetData(); setShowReset(false); }}
+          onResetLayout={() => { Analytics.resetClicked(); resetLayout(); setShowReset(false); }}
+          onResetData={() => { Analytics.resetClicked(); resetData(); setShowReset(false); }}
+          onResetAll={() => { Analytics.resetClicked(); resetLayout(); resetData(); setShowReset(false); }}
           onClose={() => setShowReset(false)}
         />
       )}

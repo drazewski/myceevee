@@ -1,5 +1,6 @@
 import { useSettingsStore, LayoutId } from '../store/settingsStore';
 import LanguageSelector from './LanguageSelector';
+import { Analytics } from '../lib/analytics';
 import './LayoutsDrawer.css';
 
 interface LayoutCard {
@@ -89,7 +90,7 @@ export default function LayoutsDrawer() {
             key={layout.id}
             type="button"
             className={`layout-card${layoutId === layout.id ? ' layout-card--active' : ''}`}
-            onClick={() => setLayout(layout.id)}
+            onClick={() => { Analytics.layoutChanged(layout.id); setLayout(layout.id); }}
           >
             <div className="layout-card__preview">{layout.preview}</div>
             <div className="layout-card__info">

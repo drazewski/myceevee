@@ -1,8 +1,27 @@
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import * as CookieConsent from 'vanilla-cookieconsent';
 
-export function initCookieConsent() {
+type ConsentCallbacks = {
+  onAnalyticsEnabled: () => void;
+  onAnalyticsDisabled: () => void;
+};
+
+export function initCookieConsent(callbacks?: ConsentCallbacks) {
   CookieConsent.run({
+    onConsent: () => {
+      if (CookieConsent.acceptedCategory('analytics')) {
+        callbacks?.onAnalyticsEnabled();
+      }
+    },
+    onChange: ({ changedCategories }) => {
+      if (changedCategories.includes('analytics')) {
+        if (CookieConsent.acceptedCategory('analytics')) {
+          callbacks?.onAnalyticsEnabled();
+        } else {
+          callbacks?.onAnalyticsDisabled();
+        }
+      }
+    },
     guiOptions: {
       consentModal: {
         layout: 'bar',
