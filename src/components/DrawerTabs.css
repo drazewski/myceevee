@@ -91,6 +91,12 @@
 
 /* Disabled tab */
 
+@media (max-width: 500px) {
+  .drawer-tab__label {
+    display: none;
+  }
+}
+
 @media print {
   .drawer-root {
     display: none;

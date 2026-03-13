@@ -12,13 +12,13 @@ export default function AboutMe() {
       <h2 className="cv-section__title">
         <EditableText value={sectionTitles.aboutMe} onChange={(v) => setSectionTitle('aboutMe', v)} />
       </h2>
-      <ul className="about-me__list">
+      <div className="about-me__list">
         {aboutMe.map((point, i) => (
-          <li key={i} className="about-me__item">
+          <div key={i} className="about-me__item">
             <EditableText value={point} onChange={(v) => setAboutMeItem(i, v)} multiline onRemove={() => removeAboutMeItem(i)} />
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
       <button type="button" className="btn-add" onClick={addAboutMeItem}>
         <FontAwesomeIcon icon={faPlus} /> Add point
       </button>

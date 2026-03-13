@@ -40,9 +40,21 @@ export function useFitText(displayText: string, active: boolean) {
     // without creating a feedback loop on the element we're scaling.
     const observer = new ResizeObserver(fit);
     observer.observe(parent);
+
+    // Also re-measure when CSS variables change (e.g. font-size slider).
+    // CSS variable changes update the inline style on .cv-layout.
+    const cvLayout = document.querySelector('.cv-layout');
+    const mutObserver = cvLayout
+      ? new MutationObserver(fit)
+      : null;
+    mutObserver?.observe(cvLayout!, { attributes: true, attributeFilter: ['style'] });
+
     fit();
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      mutObserver?.disconnect();
+    };
   }, [active, displayText]);
 
   return { ref, fontSize };

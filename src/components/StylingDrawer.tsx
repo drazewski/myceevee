@@ -28,13 +28,13 @@ function SizeSlider({
 }
 
 function SpacingSlider({
-  label, value, onChange,
-}: { label: string; value: number; onChange: (v: number) => void }) {
+  label, value, onChange, min = 1, max = 2.0,
+}: { label: string; value: number; onChange: (v: number) => void; min?: number; max?: number }) {
   return (
     <Row label={label}>
       <div className="sd-slider-group">
         <input
-          type="range" min={1.2} max={2.0} step={0.05} value={value}
+          type="range" min={min} max={max} step={0.05} value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           className="sd-slider"
         />
@@ -111,7 +111,7 @@ export default function StylingDrawer() {
             onChange={(v) => setStyling('fontSizeUSTitle', v)} />
           <SizeSlider label="Contact items" value={styling.fontSizeUSContact} min={9} max={16}
             onChange={(v) => setStyling('fontSizeUSContact', v)} />
-          <SizeSlider label="Section titles" value={styling.fontSizeTitle} min={9} max={18}
+          <SizeSlider label="Section titles" value={styling.fontSizeTitle} min={9} max={20}
             onChange={(v) => setStyling('fontSizeTitle', v)} />
           <SizeSlider label="Body text" value={styling.fontSizeBody} min={10} max={18}
             onChange={(v) => setStyling('fontSizeBody', v)} />
@@ -122,7 +122,7 @@ export default function StylingDrawer() {
         <>
           <SizeSlider label="Sidebar text" value={styling.fontSizeSidebar} min={10} max={16}
             onChange={(v) => setStyling('fontSizeSidebar', v)} />
-          <SizeSlider label="Section titles" value={styling.fontSizeTitle} min={9} max={18}
+          <SizeSlider label="Section titles" value={styling.fontSizeTitle} min={9} max={20}
             onChange={(v) => setStyling('fontSizeTitle', v)} />
           <SizeSlider label="Body text" value={styling.fontSizeBody} min={10} max={18}
             onChange={(v) => setStyling('fontSizeBody', v)} />

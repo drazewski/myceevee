@@ -140,21 +140,26 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {sidebarOrder.map((key, idx) => {
-        const isContact = ['position', 'location', 'email', 'webpage', 'github', 'linkedin'].includes(key);
-        const prevKey = idx > 0 ? sidebarOrder[idx - 1] : null;
-        const prevIsContact = prevKey ? ['position', 'location', 'email', 'webpage', 'github', 'linkedin'].includes(prevKey) : false;
+      {(() => {
+        const CONTACT_KEYS = ['position', 'location', 'email', 'webpage', 'github', 'linkedin'];
+        const visibleItems = sidebarOrder
+          .map((key) => ({ key, item: renderItem(key) }))
+          .filter(({ item }) => item !== null);
 
-        // Insert divider before the first contact item that follows a non-contact item
-        const needsDivider = isContact && !prevIsContact && idx > 0;
+        return visibleItems.map(({ key, item }, idx) => {
+          const isContact = CONTACT_KEYS.includes(key);
+          const prevKey = idx > 0 ? visibleItems[idx - 1].key : null;
+          const prevIsContact = prevKey ? CONTACT_KEYS.includes(prevKey) : false;
+          const needsDivider = isContact && !prevIsContact && idx > 0;
 
-        return (
-          <div key={key} className={isContact ? 'sidebar__contact-item-wrapper' : undefined}>
-            {needsDivider && <div className="sidebar__divider" />}
-            {renderItem(key)}
-          </div>
-        );
-      })}
+          return (
+            <div key={key} className={isContact ? 'sidebar__contact-item-wrapper' : undefined}>
+              {needsDivider && <div className="sidebar__divider" />}
+              {item}
+            </div>
+          );
+        });
+      })()}
 
       {sidebarCustom.map((sec) => (
         <div key={sec.id}>
