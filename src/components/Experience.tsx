@@ -43,16 +43,21 @@ export default function Experience() {
               </div>
             </div>
 
-            <ul className="experience__bullets">
+            <div className="experience__bullets">
               {job.bullets.map((bullet, bulletIndex) => (
-                <li key={bulletIndex} className="experience__bullet-item">
-                  <EditableText value={bullet} onChange={(value) => setExperienceBullet(index, bulletIndex, value)} multiline onRemove={() => removeExperienceBullet(index, bulletIndex)} />
-                </li>
+                <div key={bullet.id} className={`experience__bullet-item experience__bullet-item--${bullet.type}`}>
+                  <EditableText value={bullet.content} onChange={(value) => setExperienceBullet(index, bulletIndex, value)} multiline onRemove={() => removeExperienceBullet(index, bulletIndex)} />
+                </div>
               ))}
-            </ul>
-            <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index)}>
-              <FontAwesomeIcon icon={faPlus} /> {t('actions.addBullet')}
-            </button>
+            </div>
+            <div className="btn-add-group btn-add-group--small">
+              <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index, 'text')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+              </button>
+              <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index, 'point')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+              </button>
+            </div>
           </article>
         ))}
       </div>

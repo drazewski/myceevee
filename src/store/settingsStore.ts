@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CustomOrderItem, createCustomOrderItem, isCustomOrderItem } from '../lib/sectionOrder';
 
 export type LayoutId = 'classic' | 'us-single';
 
@@ -22,13 +23,11 @@ export interface Styling {
   fontSizeBody: number;
   lineHeightSidebar: number;
   lineHeightBody: number;
-  // US single-column layout
   fontSizeUSName: number;
   fontSizeUSTitle: number;
   fontSizeUSContact: number;
   lineHeightUSHeader: number;
   showContactIcons: boolean;
-  // Photo size (per layout)
   photoSizeClassic: number;
   photoSizeUS: number;
 }
@@ -37,17 +36,25 @@ export type SidebarKey = 'photo' | 'name' | 'title' | 'position' | 'location' | 
 export type MainKey = 'aboutMe' | 'experience' | 'education' | 'courses';
 export type VisibilityKey = SidebarKey | MainKey;
 export type Visibility = Record<VisibilityKey, boolean>;
+export type SidebarOrderItem = SidebarKey | CustomOrderItem;
+export type MainOrderItem = MainKey | CustomOrderItem;
 
 interface SettingsStore {
   layoutId: LayoutId;
   styling: Styling;
   visibility: Visibility;
-  sidebarOrder: SidebarKey[];
-  mainOrder: MainKey[];
+  sidebarOrder: SidebarOrderItem[];
+  mainOrder: MainOrderItem[];
+  setSidebarOrder: (order: SidebarOrderItem[]) => void;
+  setMainOrder: (order: MainOrderItem[]) => void;
   setStyling: <K extends keyof Styling>(key: K, value: Styling[K]) => void;
   setVisibility: (key: VisibilityKey, value: boolean) => void;
   reorderSidebar: (from: number, to: number) => void;
   reorderMain: (from: number, to: number) => void;
+  addSidebarCustomSection: (id: string) => void;
+  addMainCustomSection: (id: string) => void;
+  removeSidebarCustomSection: (id: string) => void;
+  removeMainCustomSection: (id: string) => void;
   resetLayout: () => void;
   setLayout: (id: LayoutId) => void;
 }
@@ -76,8 +83,8 @@ const defaultVisibility: Visibility = {
   aboutMe: true, experience: true, education: true, courses: true,
 };
 
-const defaultSidebarOrder: SidebarKey[] = ['photo', 'name', 'title', 'position', 'location', 'email', 'webpage', 'github', 'linkedin', 'technologies'];
-const defaultMainOrder: MainKey[] = ['aboutMe', 'experience', 'education', 'courses'];
+export const DEFAULT_SIDEBAR_ORDER: SidebarKey[] = ['photo', 'name', 'title', 'position', 'location', 'email', 'webpage', 'github', 'linkedin', 'technologies'];
+export const DEFAULT_MAIN_ORDER: MainKey[] = ['aboutMe', 'experience', 'education', 'courses'];
 
 function reorder<T>(arr: T[], from: number, to: number): T[] {
   const next = [...arr];
@@ -86,8 +93,61 @@ function reorder<T>(arr: T[], from: number, to: number): T[] {
   return next;
 }
 
-const isMobileScreen = () =>
-  typeof window !== 'undefined' && window.innerWidth < 768;
+function appendIfMissing<T extends string>(order: T[], item: T): T[] {
+  return order.includes(item) ? order : [...order, item];
+}
+
+function removeIfPresent<T extends string>(order: T[], item: T): T[] {
+  return order.filter((entry) => entry !== item);
+}
+
+function isMobileScreen() {
+  return typeof window !== 'undefined' && window.innerWidth < 768;
+}
+
+function sanitizeOrder<TBuiltIn extends string>(order: unknown, builtInItems: readonly TBuiltIn[]): Array<TBuiltIn | CustomOrderItem> {
+  if (!Array.isArray(order)) return [...builtInItems];
+
+  const builtInSet = new Set<string>(builtInItems);
+  const sanitized: Array<TBuiltIn | CustomOrderItem> = [];
+  const seen = new Set<string>();
+
+  for (const item of order) {
+    if (typeof item !== 'string' || seen.has(item)) continue;
+    if (builtInSet.has(item) || isCustomOrderItem(item)) {
+      sanitized.push(item as TBuiltIn | CustomOrderItem);
+      seen.add(item);
+    }
+  }
+
+  for (const item of builtInItems) {
+    if (!seen.has(item)) {
+      sanitized.push(item);
+    }
+  }
+
+  return sanitized;
+}
+
+type PersistedSettings = Partial<{
+  layoutId: LayoutId;
+  styling: Partial<Styling>;
+  visibility: Partial<Visibility>;
+  sidebarOrder: SidebarOrderItem[];
+  mainOrder: MainOrderItem[];
+}>;
+
+function migrateSettings(stored: unknown) {
+  const state = (stored as PersistedSettings | undefined) ?? {};
+
+  return {
+    layoutId: state.layoutId === 'us-single' ? 'us-single' : 'classic',
+    styling: { ...defaultStyling, ...(state.styling ?? {}) },
+    visibility: { ...defaultVisibility, ...(state.visibility ?? {}) },
+    sidebarOrder: sanitizeOrder(state.sidebarOrder, DEFAULT_SIDEBAR_ORDER),
+    mainOrder: sanitizeOrder(state.mainOrder, DEFAULT_MAIN_ORDER),
+  };
+}
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
@@ -95,8 +155,10 @@ export const useSettingsStore = create<SettingsStore>()(
       layoutId: isMobileScreen() ? 'us-single' : 'classic',
       styling: defaultStyling,
       visibility: defaultVisibility,
-      sidebarOrder: defaultSidebarOrder,
-      mainOrder: defaultMainOrder,
+      sidebarOrder: DEFAULT_SIDEBAR_ORDER,
+      mainOrder: DEFAULT_MAIN_ORDER,
+      setSidebarOrder: (order) => set({ sidebarOrder: order }),
+      setMainOrder: (order) => set({ mainOrder: order }),
       setStyling: (key, value) =>
         set((s) => ({ styling: { ...s.styling, [key]: value } })),
       setVisibility: (key, value) =>
@@ -105,26 +167,28 @@ export const useSettingsStore = create<SettingsStore>()(
         set((s) => ({ sidebarOrder: reorder(s.sidebarOrder, from, to) })),
       reorderMain: (from, to) =>
         set((s) => ({ mainOrder: reorder(s.mainOrder, from, to) })),
+      addSidebarCustomSection: (id) =>
+        set((s) => ({ sidebarOrder: appendIfMissing(s.sidebarOrder, createCustomOrderItem(id)) })),
+      addMainCustomSection: (id) =>
+        set((s) => ({ mainOrder: appendIfMissing(s.mainOrder, createCustomOrderItem(id)) })),
+      removeSidebarCustomSection: (id) =>
+        set((s) => ({ sidebarOrder: removeIfPresent(s.sidebarOrder, createCustomOrderItem(id)) })),
+      removeMainCustomSection: (id) =>
+        set((s) => ({ mainOrder: removeIfPresent(s.mainOrder, createCustomOrderItem(id)) })),
       resetLayout: () =>
         set({
           layoutId: isMobileScreen() ? 'us-single' : 'classic',
           styling: defaultStyling,
           visibility: defaultVisibility,
-          sidebarOrder: defaultSidebarOrder,
-          mainOrder: defaultMainOrder,
+          sidebarOrder: DEFAULT_SIDEBAR_ORDER,
+          mainOrder: DEFAULT_MAIN_ORDER,
         }),
       setLayout: (id) => set({ layoutId: id }),
     }),
     {
       name: 'cv-settings',
-      version: 8,
-      migrate: (_state, _version) => ({
-        layoutId: isMobileScreen() ? 'us-single' : 'classic',
-        styling: defaultStyling,
-        visibility: defaultVisibility,
-        sidebarOrder: defaultSidebarOrder,
-        mainOrder: defaultMainOrder,
-      }),
-    }
-  )
+      version: 11,
+      migrate: (stored) => migrateSettings(stored),
+    },
+  ),
 );

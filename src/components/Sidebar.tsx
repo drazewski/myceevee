@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,7 +10,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { useCvStore } from '../store/cvStore';
-import { useSettingsStore, SidebarKey } from '../store/settingsStore';
+import { DEFAULT_SIDEBAR_ORDER, useSettingsStore, SidebarKey } from '../store/settingsStore';
+import { getCustomOrderItemId, isCustomOrderItem, resolveSectionOrder } from '../lib/sectionOrder';
 import EditableText from './EditableText';
 import PhotoUpload from './PhotoUpload';
 import CustomSection from './CustomSection';
@@ -23,14 +24,35 @@ export default function Sidebar() {
     setName, setTitle, setContact, setPhoto, setSectionTitle,
     setTechnology, addTechnology, removeTechnology, reorderTechnologies,
     addCustomSection, removeCustomSection, setCustomSectionField,
+    addCustomSectionItem, setCustomSectionItem, removeCustomSectionItem,
   } = useCvStore();
-  const { visibility, sidebarOrder } = useSettingsStore();
+  const { visibility, sidebarOrder, addSidebarCustomSection, removeSidebarCustomSection } = useSettingsStore();
 
   const dragIndex = useRef<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
   const [dragging, setDragging] = useState<number | null>(null);
 
-  const renderItem = (key: SidebarKey) => {
+  const resolvedSidebarOrder = useMemo(
+    () => resolveSectionOrder(sidebarOrder, DEFAULT_SIDEBAR_ORDER, sidebarCustom.map((section) => section.id)),
+    [sidebarCustom, sidebarOrder],
+  );
+
+  const sidebarCustomMap = useMemo(
+    () => new Map(sidebarCustom.map((section) => [section.id, section])),
+    [sidebarCustom],
+  );
+
+  const handleAddSection = () => {
+    const id = addCustomSection('sidebarCustom');
+    addSidebarCustomSection(id);
+  };
+
+  const handleRemoveSection = (id: string) => {
+    removeCustomSection('sidebarCustom', id);
+    removeSidebarCustomSection(id);
+  };
+
+  const renderBuiltInItem = (key: SidebarKey) => {
     if (!visibility[key]) return null;
 
     switch (key) {
@@ -140,47 +162,59 @@ export default function Sidebar() {
     }
   };
 
-  return (
-    <aside className="sidebar">
-      {(() => {
-        const contactKeys = ['position', 'location', 'email', 'webpage', 'github', 'linkedin'];
-        const visibleItems = sidebarOrder
-          .map((key) => ({ key, item: renderItem(key) }))
-          .filter(({ item }) => item !== null);
+  const visibleEntries = resolvedSidebarOrder.flatMap((item) => {
+    if (isCustomOrderItem(item)) {
+      const section = sidebarCustomMap.get(getCustomOrderItemId(item));
+      if (!section) return [];
 
-        return visibleItems.map(({ key, item }, index) => {
-          const isContact = contactKeys.includes(key);
-          const previousKey = index > 0 ? visibleItems[index - 1].key : null;
-          const previousIsContact = previousKey ? contactKeys.includes(previousKey) : false;
-          const needsDivider = isContact && !previousIsContact && index > 0;
-
-          return (
-            <div key={key} className={isContact ? 'sidebar__contact-item-wrapper' : undefined}>
-              {needsDivider && <div className="sidebar__divider" />}
-              {item}
-            </div>
-          );
-        });
-      })()}
-
-      {sidebarCustom.map((section) => (
-        <div key={section.id}>
-          <div className="sidebar__divider" />
+      return [{
+        key: section.id,
+        kind: 'custom' as const,
+        node: (
           <CustomSection
             title={section.title}
-            content={section.content}
+            items={section.items}
             dark
             onChangeTitle={(value) => setCustomSectionField('sidebarCustom', section.id, 'title', value)}
-            onChangeContent={(value) => setCustomSectionField('sidebarCustom', section.id, 'content', value)}
-            onRemove={() => removeCustomSection('sidebarCustom', section.id)}
+            onAddItem={(type) => addCustomSectionItem('sidebarCustom', section.id, type)}
+            onChangeItem={(index, value) => setCustomSectionItem('sidebarCustom', section.id, index, value)}
+            onRemoveItem={(index) => removeCustomSectionItem('sidebarCustom', section.id, index)}
+            onRemove={() => handleRemoveSection(section.id)}
           />
-        </div>
-      ))}
+        ),
+      }];
+    }
+
+    const node = renderBuiltInItem(item);
+    if (!node) return [];
+
+    return [{
+      key: item,
+      kind: ['position', 'location', 'email', 'webpage', 'github', 'linkedin'].includes(item) ? 'contact' as const : 'regular' as const,
+      node,
+    }];
+  });
+
+  return (
+    <aside className="sidebar">
+      {visibleEntries.map((entry, index) => {
+        const previous = index > 0 ? visibleEntries[index - 1] : null;
+        const needsDivider = entry.kind === 'custom'
+          ? index > 0
+          : entry.kind === 'contact' && previous?.kind !== 'contact';
+
+        return (
+          <div key={entry.key} className={entry.kind === 'contact' ? 'sidebar__contact-item-wrapper' : undefined}>
+            {needsDivider && <div className="sidebar__divider" />}
+            {entry.node}
+          </div>
+        );
+      })}
 
       <button
         type="button"
         className="sidebar__add-section btn-add btn-add--small"
-        onClick={() => addCustomSection('sidebarCustom')}
+        onClick={handleAddSection}
       >
         <FontAwesomeIcon icon={faPlus} /> {t('actions.addSection')}
       </button>

@@ -70,7 +70,7 @@
 
 .experience__bullets {
   margin: 0 0 0.5rem;
-  padding: 0 0 0 1.1rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -87,6 +87,19 @@
 
 .experience__bullet-item .editable-text {
   flex: 1;
+}
+
+.experience__bullet-item--point {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.experience__bullet-item--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: currentColor;
 }
 
 .experience__bullet-item .btn-remove {
@@ -134,4 +147,14 @@
   font-size: 0.72rem;
   padding: 0.2rem 0.5rem;
   margin-top: 0.1rem;
+}
+
+.btn-add-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-add-group--small {
+  gap: 0.35rem;
 }

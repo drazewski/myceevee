@@ -127,6 +127,19 @@
   margin-bottom: 12px;
 }
 
+.us-entry--point {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.us-entry--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  color: var(--color-primary, #1e2a3a);
+}
+
 .us-entry__header {
   display: flex;
   justify-content: space-between;
@@ -195,21 +208,6 @@
 }
 
 /* ── Bullets ─────────────────────────────────────────────────── */
-.us-bullets {
-  list-style: disc;
-  margin: 6px 0 0 18px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.us-bullets__item {
-  font-size: var(--font-size-body, 13px);
-  line-height: var(--line-height-body, 1.5);
-  color: #1a1a1a;
-}
-
 /* ── Technologies ────────────────────────────────────────────── */
 .us-tech-list {
   display: flex;
@@ -227,4 +225,50 @@
   padding: 2px 8px;
   font-size: calc(var(--font-size-body, 13px) - 1px);
   color: #3a4a5a;
+}
+
+.us-text-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.us-text-list--compact {
+  margin-top: 0.4rem;
+}
+
+.us-text-item {
+  font-size: var(--font-size-body, 13px);
+  line-height: var(--line-height-body, 1.5);
+  color: #1a1a1a;
+}
+
+.us-text-item--point {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.us-text-item--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: currentColor;
+}
+
+.us-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-add-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-add-group--small {
+  gap: 0.35rem;
 }

@@ -38,7 +38,10 @@
     "website": "Sito web",
     "github": "GitHub",
     "linkedin": "LinkedIn",
-    "technologies": "Tecnologie"
+    "technologies": "Tecnologie",
+    "displayMode": "Modalità di visualizzazione",
+    "textMode": "Testo",
+    "listMode": "Elenco"
   },
   "styling": {
     "colors": "Colori",
@@ -78,6 +81,7 @@
   "actions": {
     "add": "Aggiungi",
     "addSection": "Aggiungi sezione",
+    "addText": "Aggiungi testo",
     "addPoint": "Aggiungi punto",
     "addBullet": "Aggiungi punto elenco",
     "addExperience": "Aggiungi esperienza",

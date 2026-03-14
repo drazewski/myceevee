@@ -16,7 +16,7 @@ export default function Education() {
       </h2>
       <div className="education__list">
         {education.map((entry, index) => (
-          <div key={index} className="education__entry">
+          <div key={entry.id} className={`education__entry education__entry--${entry.type}`}>
             <div className="education__header">
               <div>
                 <h3 className="education__degree">
@@ -38,9 +38,14 @@ export default function Education() {
           </div>
         ))}
       </div>
-      <button type="button" className="btn-add" onClick={addEducation}>
-        <FontAwesomeIcon icon={faPlus} /> {t('actions.addEducation')}
-      </button>
+      <div className="btn-add-group">
+        <button type="button" className="btn-add" onClick={() => addEducation('text')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+        </button>
+        <button type="button" className="btn-add" onClick={() => addEducation('point')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+        </button>
+      </div>
     </section>
   );
 }

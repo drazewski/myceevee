@@ -105,3 +105,58 @@
 .ed-toggle--on .ed-toggle__thumb {
   transform: translateX(16px);
 }
+
+.ed-item__toggle-spacer {
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.ed-mode-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ed-mode-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ed-mode-item__label {
+  font-size: 0.8rem;
+  color: #3a4a5a;
+  min-width: 0;
+}
+
+.ed-mode-item__actions {
+  display: inline-flex;
+  border: 1px solid #d7dee8;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ed-mode-btn {
+  border: none;
+  background: #fff;
+  color: #66788a;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+}
+
+.ed-mode-btn + .ed-mode-btn {
+  border-left: 1px solid #d7dee8;
+}
+
+.ed-mode-btn--active {
+  background: #e8f2ff;
+  color: #2563a6;
+}

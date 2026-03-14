@@ -15,15 +15,20 @@ export default function AboutMe() {
         <EditableText value={sectionTitles.aboutMe} onChange={(value) => setSectionTitle('aboutMe', value)} />
       </h2>
       <div className="about-me__list">
-        {aboutMe.map((point, index) => (
-          <div key={index} className="about-me__item">
-            <EditableText value={point} onChange={(value) => setAboutMeItem(index, value)} multiline onRemove={() => removeAboutMeItem(index)} />
+        {aboutMe.map((item, index) => (
+          <div key={item.id} className={`about-me__item about-me__item--${item.type}`}>
+            <EditableText value={item.content} onChange={(value) => setAboutMeItem(index, value)} multiline onRemove={() => removeAboutMeItem(index)} />
           </div>
         ))}
       </div>
-      <button type="button" className="btn-add" onClick={addAboutMeItem}>
-        <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
-      </button>
+      <div className="btn-add-group">
+        <button type="button" className="btn-add" onClick={() => addAboutMeItem('text')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+        </button>
+        <button type="button" className="btn-add" onClick={() => addAboutMeItem('point')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+        </button>
+      </div>
     </section>
   );
 }

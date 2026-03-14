@@ -1,24 +1,29 @@
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { TextPointItem } from '../data/cv';
 import EditableText from './EditableText';
 import './CustomSection.css';
 
 interface CustomSectionProps {
   title: string;
-  content: string;
+  items: TextPointItem[];
   dark?: boolean;
   onChangeTitle: (value: string) => void;
-  onChangeContent: (value: string) => void;
+  onAddItem: (type: 'text' | 'point') => void;
+  onChangeItem: (index: number, value: string) => void;
+  onRemoveItem: (index: number) => void;
   onRemove: () => void;
 }
 
 export default function CustomSection({
   title,
-  content,
+  items,
   dark = false,
   onChangeTitle,
-  onChangeContent,
+  onAddItem,
+  onChangeItem,
+  onRemoveItem,
   onRemove,
 }: CustomSectionProps) {
   const { t } = useTranslation();
@@ -39,13 +44,28 @@ export default function CustomSection({
         </button>
       </div>
       <div className="custom-section__content">
-        <EditableText
-          value={content}
-          onChange={onChangeContent}
-          multiline
-          dark={dark}
-          placeholder={t('editable.customSectionPlaceholder')}
-        />
+        <div className="custom-section__items">
+          {items.map((item, index) => (
+            <div key={item.id} className={`custom-section__item custom-section__item--${item.type}`}>
+              <EditableText
+                value={item.content}
+                onChange={(value) => onChangeItem(index, value)}
+                multiline
+                dark={dark}
+                onRemove={() => onRemoveItem(index)}
+                placeholder={t('editable.customSectionPlaceholder')}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="btn-add-group">
+          <button type="button" className="btn-add" onClick={() => onAddItem('text')}>
+            <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+          </button>
+          <button type="button" className="btn-add" onClick={() => onAddItem('point')}>
+            <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -7,21 +7,34 @@ export interface Contact {
   linkedin: string;
 }
 
+export type MainSectionItemType = 'text' | 'point';
+
+export interface TextPointItem {
+  id: string;
+  type: MainSectionItemType;
+  content: string;
+}
+
 export interface ExperienceEntry {
+  id: string;
   company: string;
   role: string;
   period: string;
   location: string;
-  bullets: string[];
+  bullets: TextPointItem[];
 }
 
 export interface EducationEntry {
+  id: string;
+  type: MainSectionItemType;
   institution: string;
   degree: string;
   period: string;
 }
 
 export interface CourseEntry {
+  id: string;
+  type: MainSectionItemType;
   name: string;
   provider: string;
   year: string;
@@ -50,7 +63,7 @@ export const SECTION_TITLE_DEFAULTS: Record<CvLanguage, SectionTitles> = {
 export interface CustomSection {
   id: string;
   title: string;
-  content: string;
+  items: TextPointItem[];
 }
 
 export interface CvData {
@@ -60,7 +73,7 @@ export interface CvData {
   contact: Contact;
   technologies: string[];
   sectionTitles: SectionTitles;
-  aboutMe: string[];
+  aboutMe: TextPointItem[];
   experience: ExperienceEntry[];
   education: EducationEntry[];
   courses: CourseEntry[];
@@ -96,53 +109,60 @@ export const cvData: CvData = {
   },
 
   aboutMe: [
-    'Passionate about building scalable and maintainable web applications.',
-    '8+ years of experience across full-stack development and cloud architecture.',
-    'Strong communicator who thrives in cross-functional agile teams.',
-    'Open-source contributor and continuous learner.',
+    { id: 'about-1', type: 'text', content: 'Passionate about building scalable and maintainable web applications.' },
+    { id: 'about-2', type: 'text', content: '8+ years of experience across full-stack development and cloud architecture.' },
+    { id: 'about-3', type: 'text', content: 'Strong communicator who thrives in cross-functional agile teams.' },
+    { id: 'about-4', type: 'text', content: 'Open-source contributor and continuous learner.' },
   ],
 
   experience: [
     {
+      id: 'experience-1',
       company: 'Acme Corp',
       role: 'Senior Software Engineer',
       period: '2021 – Present',
       location: 'Warsaw, Poland',
       bullets: [
-        'Led migration of monolithic backend to microservices, reducing deployment time by 60%.',
-        'Architected React component library adopted across 4 product teams.',
-        'Mentored 3 junior developers through pair programming and code reviews.',
+        { id: 'experience-1-bullet-1', type: 'point', content: 'Led migration of monolithic backend to microservices, reducing deployment time by 60%.' },
+        { id: 'experience-1-bullet-2', type: 'point', content: 'Architected React component library adopted across 4 product teams.' },
+        { id: 'experience-1-bullet-3', type: 'point', content: 'Mentored 3 junior developers through pair programming and code reviews.' },
       ],
     },
     {
+      id: 'experience-2',
       company: 'Beta Tech',
       role: 'Software Engineer',
       period: '2018 – 2021',
       location: 'Kraków, Poland',
       bullets: [
-        'Built RESTful APIs consumed by 200k+ monthly active users.',
-        'Introduced TypeScript across the frontend codebase, cutting runtime errors by 40%.',
+        { id: 'experience-2-bullet-1', type: 'point', content: 'Built RESTful APIs consumed by 200k+ monthly active users.' },
+        { id: 'experience-2-bullet-2', type: 'point', content: 'Introduced TypeScript across the frontend codebase, cutting runtime errors by 40%.' },
       ],
     },
     {
+      id: 'experience-3',
       company: 'Startup XYZ',
       role: 'Junior Developer',
       period: '2016 – 2018',
       location: 'Remote',
       bullets: [
-        'Developed features for an e-commerce platform using React and Node.js.',
-        'Improved CI pipeline scripts, cutting build times in half.',
+        { id: 'experience-3-bullet-1', type: 'point', content: 'Developed features for an e-commerce platform using React and Node.js.' },
+        { id: 'experience-3-bullet-2', type: 'point', content: 'Improved CI pipeline scripts, cutting build times in half.' },
       ],
     },
   ],
 
   education: [
     {
+      id: 'education-1',
+      type: 'text',
       institution: 'Warsaw University of Technology',
       degree: 'M.Sc. Computer Science',
       period: '2014 – 2016',
     },
     {
+      id: 'education-2',
+      type: 'text',
       institution: 'Warsaw University of Technology',
       degree: 'B.Sc. Computer Science',
       period: '2010 – 2014',
@@ -151,16 +171,22 @@ export const cvData: CvData = {
 
   courses: [
     {
+      id: 'course-1',
+      type: 'text',
       name: 'AWS Certified Solutions Architect – Associate',
       provider: 'Amazon Web Services',
       year: '2023',
     },
     {
+      id: 'course-2',
+      type: 'text',
       name: 'Advanced React Patterns',
       provider: 'Frontend Masters',
       year: '2022',
     },
     {
+      id: 'course-3',
+      type: 'text',
       name: 'Docker & Kubernetes: The Practical Guide',
       provider: 'Udemy',
       year: '2021',

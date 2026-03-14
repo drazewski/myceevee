@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLocationDot, faGlobe, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { useCvStore } from '../store/cvStore';
-import { useSettingsStore } from '../store/settingsStore';
+import { DEFAULT_MAIN_ORDER, DEFAULT_SIDEBAR_ORDER, useSettingsStore, MainKey, SidebarKey } from '../store/settingsStore';
+import { getCustomOrderItemId, isCustomOrderItem, resolveSectionOrder } from '../lib/sectionOrder';
 import EditableText from './EditableText';
 import CustomSection from './CustomSection';
 import PhotoUpload from './PhotoUpload';
@@ -24,8 +26,16 @@ export default function USLayout() {
     setEducationField, addEducation, removeEducation,
     setCourseField, addCourse, removeCourse,
     addCustomSection, removeCustomSection, setCustomSectionField,
+    addCustomSectionItem, setCustomSectionItem, removeCustomSectionItem,
   } = useCvStore();
-  const { visibility, mainOrder, sidebarOrder, styling } = useSettingsStore();
+  const {
+    visibility,
+    mainOrder,
+    sidebarOrder,
+    styling,
+    addMainCustomSection,
+    removeMainCustomSection,
+  } = useSettingsStore();
   const { showContactIcons } = styling;
 
   const allContactItems = {
@@ -38,40 +48,71 @@ export default function USLayout() {
   } as const;
 
   type ContactKey = keyof typeof allContactItems;
-  const contactKeySet = new Set<string>(['email', 'location', 'position', 'webpage', 'github', 'linkedin']);
+  const contactKeySet = new Set<SidebarKey>(['email', 'location', 'position', 'webpage', 'github', 'linkedin']);
 
-  const visibleContact = sidebarOrder
-    .filter((key): key is ContactKey => contactKeySet.has(key) && visibility[key] && !!allContactItems[key]?.value)
+  const resolvedSidebarOrder = useMemo(
+    () => resolveSectionOrder(sidebarOrder, DEFAULT_SIDEBAR_ORDER, []),
+    [sidebarOrder],
+  );
+
+  const resolvedMainOrder = useMemo(
+    () => resolveSectionOrder(mainOrder, DEFAULT_MAIN_ORDER, mainCustom.map((section) => section.id)),
+    [mainCustom, mainOrder],
+  );
+
+  const mainCustomMap = useMemo(
+    () => new Map(mainCustom.map((section) => [section.id, section])),
+    [mainCustom],
+  );
+
+  const visibleContact = resolvedSidebarOrder
+    .filter((key): key is ContactKey => !isCustomOrderItem(key) && contactKeySet.has(key) && visibility[key] && !!allContactItems[key]?.value)
     .map((key) => ({ key, ...allContactItems[key] }));
 
-  const renderSection = (key: string) => {
-    if (!visibility[key as keyof typeof visibility]) return null;
+  const handleAddSection = () => {
+    const id = addCustomSection('mainCustom');
+    addMainCustomSection(id);
+  };
+
+  const handleRemoveSection = (id: string) => {
+    removeCustomSection('mainCustom', id);
+    removeMainCustomSection(id);
+  };
+
+  const renderBuiltInSection = (key: MainKey) => {
+    if (!visibility[key]) return null;
 
     switch (key) {
-      case 'aboutMe':
+      case 'aboutMe': {
         return (
           <section key="aboutMe" className="us-section">
             <h2 className="us-section__title">
               <EditableText value={sectionTitles.aboutMe} onChange={(value) => setSectionTitle('aboutMe', value)} />
             </h2>
-            <ul className="us-bullets">
+            <div className="us-text-list">
               {aboutMe.map((item, index) => (
-                <li key={index} className="us-bullets__item">
+                <div key={item.id} className={`us-text-item us-text-item--${item.type}`}>
                   <EditableText
-                    value={item}
+                    value={item.content}
                     onChange={(value) => setAboutMeItem(index, value)}
                     onRemove={() => removeAboutMeItem(index)}
                   />
-                </li>
+                </div>
               ))}
-            </ul>
-            <button type="button" className="btn-add btn-add--small" onClick={addAboutMeItem}>
-              <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
-            </button>
+            </div>
+            <div className="btn-add-group btn-add-group--small">
+              <button type="button" className="btn-add btn-add--small" onClick={() => addAboutMeItem('text')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+              </button>
+              <button type="button" className="btn-add btn-add--small" onClick={() => addAboutMeItem('point')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+              </button>
+            </div>
           </section>
         );
+      }
 
-      case 'experience':
+      case 'experience': {
         return (
           <section key="experience" className="us-section">
             <h2 className="us-section__title">
@@ -98,20 +139,25 @@ export default function USLayout() {
                     <button type="button" className="btn-entry-remove" onClick={() => removeExperience(index)} title={t('actions.remove')}>×</button>
                   </div>
                 </div>
-                <ul className="us-bullets">
+                <div className="us-text-list us-text-list--compact">
                   {entry.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="us-bullets__item">
+                    <div key={bullet.id} className={`us-text-item us-text-item--${bullet.type}`}>
                       <EditableText
-                        value={bullet}
+                        value={bullet.content}
                         onChange={(value) => setExperienceBullet(index, bulletIndex, value)}
                         onRemove={() => removeExperienceBullet(index, bulletIndex)}
                       />
-                    </li>
+                    </div>
                   ))}
-                </ul>
-                <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index)}>
-                  <FontAwesomeIcon icon={faPlus} /> {t('actions.addBullet')}
-                </button>
+                </div>
+                <div className="btn-add-group btn-add-group--small">
+                  <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index, 'text')}>
+                    <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+                  </button>
+                  <button type="button" className="btn-add btn-add--small" onClick={() => addExperienceBullet(index, 'point')}>
+                    <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+                  </button>
+                </div>
               </div>
             ))}
             <button type="button" className="btn-add" onClick={addExperience}>
@@ -119,73 +165,87 @@ export default function USLayout() {
             </button>
           </section>
         );
+      }
 
-      case 'education':
+      case 'education': {
         return (
           <section key="education" className="us-section">
             <h2 className="us-section__title">
               <EditableText value={sectionTitles.education} onChange={(value) => setSectionTitle('education', value)} />
             </h2>
-            {education.map((entry, index) => (
-              <div key={index} className="us-entry">
-                <div className="us-entry__header">
-                  <div className="us-entry__left">
-                    <span className="us-entry__role">
-                      <EditableText value={entry.degree} onChange={(value) => setEducationField(index, 'degree', value)} />
-                    </span>
-                    <span className="us-entry__company">
-                      <EditableText value={entry.institution} onChange={(value) => setEducationField(index, 'institution', value)} />
-                    </span>
-                  </div>
-                  <div className="us-entry__right">
-                    <span className="us-entry__period">
-                      <EditableText value={entry.period} onChange={(value) => setEducationField(index, 'period', value)} fitLine />
-                    </span>
-                    <button type="button" className="btn-entry-remove" onClick={() => removeEducation(index)} title={t('actions.remove')}>×</button>
+            <div className="us-entry-list">
+              {education.map((entry, index) => (
+                <div key={entry.id} className={`us-entry us-entry--${entry.type}`}>
+                  <div className="us-entry__header">
+                    <div className="us-entry__left">
+                      <span className="us-entry__role">
+                        <EditableText value={entry.degree} onChange={(value) => setEducationField(index, 'degree', value)} />
+                      </span>
+                      <span className="us-entry__company">
+                        <EditableText value={entry.institution} onChange={(value) => setEducationField(index, 'institution', value)} />
+                      </span>
+                    </div>
+                    <div className="us-entry__right">
+                      <span className="us-entry__period">
+                        <EditableText value={entry.period} onChange={(value) => setEducationField(index, 'period', value)} fitLine />
+                      </span>
+                      <button type="button" className="btn-entry-remove" onClick={() => removeEducation(index)} title={t('actions.remove')}>×</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <button type="button" className="btn-add" onClick={addEducation}>
-              <FontAwesomeIcon icon={faPlus} /> {t('actions.addEducation')}
-            </button>
+              ))}
+            </div>
+            <div className="btn-add-group">
+              <button type="button" className="btn-add" onClick={() => addEducation('text')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+              </button>
+              <button type="button" className="btn-add" onClick={() => addEducation('point')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+              </button>
+            </div>
           </section>
         );
+      }
 
-      case 'courses':
+      case 'courses': {
         return (
           <section key="courses" className="us-section">
             <h2 className="us-section__title">
               <EditableText value={sectionTitles.courses} onChange={(value) => setSectionTitle('courses', value)} />
             </h2>
-            {courses.map((entry, index) => (
-              <div key={index} className="us-entry">
-                <div className="us-entry__header">
-                  <div className="us-entry__left">
-                    <span className="us-entry__role">
-                      <EditableText value={entry.name} onChange={(value) => setCourseField(index, 'name', value)} />
-                    </span>
-                    <span className="us-entry__company">
-                      <EditableText value={entry.provider} onChange={(value) => setCourseField(index, 'provider', value)} />
-                    </span>
-                  </div>
-                  <div className="us-entry__right">
-                    <span className="us-entry__period">
-                      <EditableText value={entry.year} onChange={(value) => setCourseField(index, 'year', value)} fitLine />
-                    </span>
-                    <button type="button" className="btn-entry-remove" onClick={() => removeCourse(index)} title={t('actions.remove')}>×</button>
+            <div className="us-entry-list">
+              {courses.map((entry, index) => (
+                <div key={entry.id} className={`us-entry us-entry--${entry.type}`}>
+                  <div className="us-entry__header">
+                    <div className="us-entry__left">
+                      <span className="us-entry__role">
+                        <EditableText value={entry.name} onChange={(value) => setCourseField(index, 'name', value)} />
+                      </span>
+                      <span className="us-entry__company">
+                        <EditableText value={entry.provider} onChange={(value) => setCourseField(index, 'provider', value)} />
+                      </span>
+                    </div>
+                    <div className="us-entry__right">
+                      <span className="us-entry__period">
+                        <EditableText value={entry.year} onChange={(value) => setCourseField(index, 'year', value)} fitLine />
+                      </span>
+                      <button type="button" className="btn-entry-remove" onClick={() => removeCourse(index)} title={t('actions.remove')}>×</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <button type="button" className="btn-add" onClick={addCourse}>
-              <FontAwesomeIcon icon={faPlus} /> {t('actions.addCourse')}
-            </button>
+              ))}
+            </div>
+            <div className="btn-add-group">
+              <button type="button" className="btn-add" onClick={() => addCourse('text')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+              </button>
+              <button type="button" className="btn-add" onClick={() => addCourse('point')}>
+                <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+              </button>
+            </div>
           </section>
         );
-
-      default:
-        return null;
+      }
     }
   };
 
@@ -213,7 +273,7 @@ export default function USLayout() {
                 {showContactIcons && item.icon && <FontAwesomeIcon icon={item.icon} className="us-header__contact-icon" />}
                 <EditableText
                   value={item.value}
-                  onChange={(value) => setContact(item.key as Parameters<typeof setContact>[0], value)}
+                  onChange={(value) => setContact(item.key, value)}
                   href={item.href}
                   hrefTarget={item.key !== 'email' && item.key !== 'location' && item.key !== 'position' ? '_blank' : undefined}
                   stripProtocol={item.stripProtocol}
@@ -226,7 +286,28 @@ export default function USLayout() {
       </header>
 
       <main className="us-main">
-        {mainOrder.map((key) => renderSection(key))}
+        {resolvedMainOrder.map((item) => {
+          if (isCustomOrderItem(item)) {
+            const section = mainCustomMap.get(getCustomOrderItemId(item));
+            if (!section) return null;
+
+            return (
+              <section key={section.id} className="us-section">
+                <CustomSection
+                  title={section.title}
+                  items={section.items}
+                  onChangeTitle={(value) => setCustomSectionField('mainCustom', section.id, 'title', value)}
+                  onAddItem={(type) => addCustomSectionItem('mainCustom', section.id, type)}
+                  onChangeItem={(index, value) => setCustomSectionItem('mainCustom', section.id, index, value)}
+                  onRemoveItem={(index) => removeCustomSectionItem('mainCustom', section.id, index)}
+                  onRemove={() => handleRemoveSection(section.id)}
+                />
+              </section>
+            );
+          }
+
+          return renderBuiltInSection(item);
+        })}
 
         {visibility.technologies && (
           <section className="us-section">
@@ -246,19 +327,7 @@ export default function USLayout() {
           </section>
         )}
 
-        {mainCustom.map((section) => (
-          <section key={section.id} className="us-section">
-            <CustomSection
-              title={section.title}
-              content={section.content}
-              onChangeTitle={(value) => setCustomSectionField('mainCustom', section.id, 'title', value)}
-              onChangeContent={(value) => setCustomSectionField('mainCustom', section.id, 'content', value)}
-              onRemove={() => removeCustomSection('mainCustom', section.id)}
-            />
-          </section>
-        ))}
-
-        <button type="button" className="btn-add" onClick={() => addCustomSection('mainCustom')}>
+        <button type="button" className="btn-add" onClick={handleAddSection}>
           <FontAwesomeIcon icon={faPlus} /> {t('actions.addSection')}
         </button>
       </main>

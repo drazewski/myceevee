@@ -52,8 +52,34 @@
   color: #3a4a5a;
 }
 
+.custom-section__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.custom-section__item {
+  position: relative;
+}
+
+.custom-section__item--point {
+  padding-left: 1rem;
+}
+
+.custom-section__item--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: currentColor;
+}
+
 .custom-section--dark .custom-section__content {
   font-size: var(--font-size-sidebar, 13px);
   line-height: var(--line-height-sidebar, 1.4);
   color: rgba(255, 255, 255, 0.75);
+}
+
+.custom-section--dark .custom-section__item--point::before {
+  color: rgba(255, 255, 255, 0.85);
 }

@@ -1,10 +1,18 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
 import { useCvStore } from '../store/cvStore';
-import { useSettingsStore, VisibilityKey, SidebarKey, MainKey } from '../store/settingsStore';
+import {
+  DEFAULT_MAIN_ORDER,
+  DEFAULT_SIDEBAR_ORDER,
+  useSettingsStore,
+  VisibilityKey,
+  SidebarKey,
+  MainKey,
+} from '../store/settingsStore';
 import { SectionTitles } from '../data/cv';
+import { getCustomOrderItemId, isCustomOrderItem, resolveSectionOrder } from '../lib/sectionOrder';
 import EditableText from './EditableText';
 import './ElementsDrawer.css';
 
@@ -18,6 +26,31 @@ const MAIN_TITLE_KEYS: Record<MainKey, keyof SectionTitles> = {
   education: 'education',
   courses: 'courses',
 };
+
+type BuiltInDrawerItem<K extends VisibilityKey> = {
+  kind: 'builtin';
+  id: K;
+  label: string;
+  titleKey?: keyof SectionTitles;
+  checked: boolean;
+  onToggle: (value: boolean) => void;
+};
+
+type CustomDrawerItem = {
+  kind: 'custom';
+  id: string;
+  label: string;
+  onChangeLabel: (value: string) => void;
+};
+
+type DrawerItem<K extends VisibilityKey> = BuiltInDrawerItem<K> | CustomDrawerItem;
+
+function reorderItems<T>(items: readonly T[], from: number, to: number): T[] {
+  const next = [...items];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (value: boolean) => void }) {
   return (
@@ -35,18 +68,13 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (value: boo
 
 function DraggableSection<K extends VisibilityKey>({
   title,
-  order,
-  labels,
-  titleKeys,
+  items,
   onReorder,
 }: {
   title: string;
-  order: K[];
-  labels: Record<K, string>;
-  titleKeys: Partial<Record<K, keyof SectionTitles>>;
+  items: DrawerItem<K>[];
   onReorder: (from: number, to: number) => void;
 }) {
-  const { visibility, setVisibility } = useSettingsStore();
   const { data: { sectionTitles }, setSectionTitle } = useCvStore();
   const dragIndex = useRef<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
@@ -55,43 +83,45 @@ function DraggableSection<K extends VisibilityKey>({
     <div className="ed-section">
       <h3 className="ed-section__title">{title}</h3>
       <ul className="ed-list">
-        {order.map((key, index) => {
-          const titleKey = titleKeys[key];
-          return (
-            <li
-              key={key}
-              className={`ed-item${dragOver === index ? ' ed-item--drag-over' : ''}`}
-              draggable
-              onDragStart={() => { dragIndex.current = index; }}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(index); }}
-              onDragLeave={() => setDragOver(null)}
-              onDrop={() => {
-                if (dragIndex.current !== null && dragIndex.current !== index) {
-                  onReorder(dragIndex.current, index);
-                }
-                dragIndex.current = null;
-                setDragOver(null);
-              }}
-              onDragEnd={() => { dragIndex.current = null; setDragOver(null); }}
-            >
-              <FontAwesomeIcon icon={faGripVertical} className="ed-item__grip" />
-              <span className="ed-item__label">
-                {titleKey ? (
+        {items.map((item, index) => (
+          <li
+            key={item.id}
+            className={`ed-item${dragOver === index ? ' ed-item--drag-over' : ''}`}
+            draggable
+            onDragStart={() => { dragIndex.current = index; }}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(index); }}
+            onDragLeave={() => setDragOver(null)}
+            onDrop={() => {
+              if (dragIndex.current !== null && dragIndex.current !== index) {
+                onReorder(dragIndex.current, index);
+              }
+              dragIndex.current = null;
+              setDragOver(null);
+            }}
+            onDragEnd={() => { dragIndex.current = null; setDragOver(null); }}
+          >
+            <FontAwesomeIcon icon={faGripVertical} className="ed-item__grip" />
+            <span className="ed-item__label">
+              {item.kind === 'builtin' ? (
+                item.titleKey ? (
                   <EditableText
-                    value={sectionTitles[titleKey]}
-                    onChange={(value) => setSectionTitle(titleKey, value)}
+                    value={sectionTitles[item.titleKey]}
+                    onChange={(value) => setSectionTitle(item.titleKey!, value)}
                   />
                 ) : (
-                  labels[key]
-                )}
-              </span>
-              <Toggle
-                checked={visibility[key]}
-                onChange={(value) => setVisibility(key as VisibilityKey, value)}
-              />
-            </li>
-          );
-        })}
+                  item.label
+                )
+              ) : (
+                <EditableText value={item.label} onChange={item.onChangeLabel} />
+              )}
+            </span>
+            {item.kind === 'builtin' ? (
+              <Toggle checked={item.checked} onChange={item.onToggle} />
+            ) : (
+              <span className="ed-item__toggle-spacer" />
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
@@ -117,7 +147,7 @@ function StaticSection({ title, keys, labels }: {
             <span className="ed-item__label">{labels[key]}</span>
             <Toggle
               checked={visibility[key]}
-              onChange={(value) => setVisibility(key as VisibilityKey, value)}
+              onChange={(value) => setVisibility(key, value)}
             />
           </li>
         ))}
@@ -128,7 +158,19 @@ function StaticSection({ title, keys, labels }: {
 
 export default function ElementsDrawer() {
   const { t } = useTranslation();
-  const { sidebarOrder, mainOrder, reorderSidebar, reorderMain, layoutId, visibility, setVisibility } = useSettingsStore();
+  const {
+    sidebarOrder,
+    mainOrder,
+    setSidebarOrder,
+    setMainOrder,
+    layoutId,
+    visibility,
+    setVisibility,
+  } = useSettingsStore();
+  const {
+    data: { sidebarCustom, mainCustom },
+    setCustomSectionField,
+  } = useCvStore();
 
   const sidebarLabels: Record<SidebarKey, string> = {
     photo: t('elements.photo'),
@@ -143,21 +185,96 @@ export default function ElementsDrawer() {
     technologies: t('elements.technologies'),
   };
 
-  const mainLabels: Record<MainKey, string> = {
-    aboutMe: t('elements.mainContent'),
-    experience: t('elements.mainContent'),
-    education: t('elements.mainContent'),
-    courses: t('elements.mainContent'),
-  };
+  const resolvedSidebarOrder = useMemo(
+    () => resolveSectionOrder(sidebarOrder, DEFAULT_SIDEBAR_ORDER, sidebarCustom.map((section) => section.id)),
+    [sidebarCustom, sidebarOrder],
+  );
 
-  const contactOrder = sidebarOrder.filter((key): key is SidebarKey => US_CONTACT_KEY_SET.has(key));
+  const resolvedMainOrder = useMemo(
+    () => resolveSectionOrder(mainOrder, DEFAULT_MAIN_ORDER, mainCustom.map((section) => section.id)),
+    [mainCustom, mainOrder],
+  );
+
+  const sidebarCustomMap = useMemo(
+    () => new Map(sidebarCustom.map((section) => [section.id, section])),
+    [sidebarCustom],
+  );
+
+  const mainCustomMap = useMemo(
+    () => new Map(mainCustom.map((section) => [section.id, section])),
+    [mainCustom],
+  );
+
+  const classicSidebarItems: DrawerItem<SidebarKey>[] = resolvedSidebarOrder.flatMap((item) => {
+    if (isCustomOrderItem(item)) {
+      const section = sidebarCustomMap.get(getCustomOrderItemId(item));
+      if (!section) return [];
+
+      return [{
+        kind: 'custom' as const,
+        id: section.id,
+        label: section.title,
+        onChangeLabel: (value: string) => setCustomSectionField('sidebarCustom', section.id, 'title', value),
+      }];
+    }
+
+    return [{
+      kind: 'builtin' as const,
+      id: item,
+      label: sidebarLabels[item],
+      titleKey: SIDEBAR_TITLE_KEYS[item],
+      checked: visibility[item],
+      onToggle: (value: boolean) => setVisibility(item, value),
+    }];
+  });
+
+  const mainItems: DrawerItem<MainKey>[] = resolvedMainOrder.flatMap((item) => {
+    if (isCustomOrderItem(item)) {
+      const section = mainCustomMap.get(getCustomOrderItemId(item));
+      if (!section) return [];
+
+      return [{
+        kind: 'custom' as const,
+        id: section.id,
+        label: section.title,
+        onChangeLabel: (value: string) => setCustomSectionField('mainCustom', section.id, 'title', value),
+      }];
+    }
+
+    return [{
+      kind: 'builtin' as const,
+      id: item,
+      label: t('elements.mainContent'),
+      titleKey: MAIN_TITLE_KEYS[item],
+      checked: visibility[item],
+      onToggle: (value: boolean) => setVisibility(item, value),
+    }];
+  });
+
+  const contactItems: DrawerItem<SidebarKey>[] = resolvedSidebarOrder.flatMap((item) => {
+    if (isCustomOrderItem(item) || !US_CONTACT_KEY_SET.has(item)) return [];
+
+    return [{
+      kind: 'builtin' as const,
+      id: item,
+      label: sidebarLabels[item],
+      titleKey: SIDEBAR_TITLE_KEYS[item],
+      checked: visibility[item],
+      onToggle: (value: boolean) => setVisibility(item, value),
+    }];
+  });
 
   const reorderContact = (from: number, to: number) => {
+    const contactOrder = resolvedSidebarOrder.filter(
+      (item): item is SidebarKey => !isCustomOrderItem(item) && US_CONTACT_KEY_SET.has(item),
+    );
     const fromKey = contactOrder[from];
     const toKey = contactOrder[to];
-    const fromIndex = sidebarOrder.indexOf(fromKey);
-    const toIndex = sidebarOrder.indexOf(toKey);
-    if (fromIndex !== -1 && toIndex !== -1) reorderSidebar(fromIndex, toIndex);
+    const fromIndex = resolvedSidebarOrder.indexOf(fromKey);
+    const toIndex = resolvedSidebarOrder.indexOf(toKey);
+
+    if (fromIndex === -1 || toIndex === -1) return;
+    setSidebarOrder(reorderItems(resolvedSidebarOrder, fromIndex, toIndex));
   };
 
   return (
@@ -172,18 +289,14 @@ export default function ElementsDrawer() {
           <div className="ed-divider" />
           <DraggableSection
             title={t('elements.contact')}
-            order={contactOrder}
-            labels={sidebarLabels}
-            titleKeys={SIDEBAR_TITLE_KEYS}
+            items={contactItems}
             onReorder={reorderContact}
           />
           <div className="ed-divider" />
           <DraggableSection
             title={t('elements.mainContent')}
-            order={mainOrder}
-            labels={mainLabels}
-            titleKeys={MAIN_TITLE_KEYS}
-            onReorder={reorderMain}
+            items={mainItems}
+            onReorder={(from, to) => setMainOrder(reorderItems(resolvedMainOrder, from, to))}
           />
           <div className="ed-divider" />
           <div className="ed-section">
@@ -201,23 +314,17 @@ export default function ElementsDrawer() {
           </div>
         </>
       ) : (
-        <DraggableSection
-          title={t('elements.sidebar')}
-          order={sidebarOrder}
-          labels={sidebarLabels}
-          titleKeys={SIDEBAR_TITLE_KEYS}
-          onReorder={reorderSidebar}
-        />
-      )}
-      {layoutId !== 'us-single' && (
         <>
+          <DraggableSection
+            title={t('elements.sidebar')}
+            items={classicSidebarItems}
+            onReorder={(from, to) => setSidebarOrder(reorderItems(resolvedSidebarOrder, from, to))}
+          />
           <div className="ed-divider" />
           <DraggableSection
             title={t('elements.mainContent')}
-            order={mainOrder}
-            labels={mainLabels}
-            titleKeys={MAIN_TITLE_KEYS}
-            onReorder={reorderMain}
+            items={mainItems}
+            onReorder={(from, to) => setMainOrder(reorderItems(resolvedMainOrder, from, to))}
           />
         </>
       )}

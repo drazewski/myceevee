@@ -16,7 +16,7 @@ export default function Courses() {
       </h2>
       <div className="courses__list">
         {courses.map((course, index) => (
-          <div key={index} className="courses__entry">
+          <div key={course.id} className={`courses__entry courses__entry--${course.type}`}>
             <div className="courses__info">
               <h3 className="courses__name">
                 <EditableText value={course.name} onChange={(value) => setCourseField(index, 'name', value)} />
@@ -36,9 +36,14 @@ export default function Courses() {
           </div>
         ))}
       </div>
-      <button type="button" className="btn-add" onClick={addCourse}>
-        <FontAwesomeIcon icon={faPlus} /> {t('actions.addCourse')}
-      </button>
+      <div className="btn-add-group">
+        <button type="button" className="btn-add" onClick={() => addCourse('text')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addText')}
+        </button>
+        <button type="button" className="btn-add" onClick={() => addCourse('point')}>
+          <FontAwesomeIcon icon={faPlus} /> {t('actions.addPoint')}
+        </button>
+      </div>
     </section>
   );
 }

@@ -10,6 +10,20 @@
   padding-left: 1rem;
 }
 
+.education__entry--point {
+  position: relative;
+  border-left: none;
+  padding-left: 1rem;
+}
+
+.education__entry--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  color: var(--color-primary);
+}
+
 .education__header {
   display: flex;
   justify-content: space-between;
@@ -80,4 +94,10 @@
 
 .btn-add:hover {
   opacity: 1;
+}
+
+.btn-add-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }

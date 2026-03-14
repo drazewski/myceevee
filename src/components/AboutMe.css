@@ -19,6 +19,19 @@
   flex: 1;
 }
 
+.about-me__item--point {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.about-me__item--point::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: currentColor;
+}
+
 /* Shared list controls */
 .btn-remove {
   flex-shrink: 0;
@@ -60,4 +73,10 @@ li:hover > .btn-remove {
 
 .btn-add:hover {
   opacity: 1;
+}
+
+.btn-add-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
